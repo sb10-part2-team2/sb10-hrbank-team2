@@ -1,4 +1,4 @@
-package com.sprint.mission.hrbank.employee;
+package com.sprint.mission.hrbank.domain.employee;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

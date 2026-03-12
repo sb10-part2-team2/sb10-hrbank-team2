@@ -1,4 +1,4 @@
-package com.sprint.mission.hrbank.baseentity;
+package com.sprint.mission.hrbank.domain.employee.baseentity;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;

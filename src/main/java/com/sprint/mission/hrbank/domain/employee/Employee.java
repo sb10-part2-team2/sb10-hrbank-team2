@@ -1,6 +1,6 @@
-package com.sprint.mission.hrbank.employee;
+package com.sprint.mission.hrbank.domain.employee;
 
-import com.sprint.mission.hrbank.baseentity.BaseEntity;
+import com.sprint.mission.hrbank.domain.employee.baseentity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 
