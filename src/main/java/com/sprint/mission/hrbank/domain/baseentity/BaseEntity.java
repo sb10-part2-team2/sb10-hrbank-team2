@@ -19,7 +19,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Setter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-
 public abstract class BaseEntity {
 
   @Id
@@ -35,5 +34,4 @@ public abstract class BaseEntity {
       createdAt = Instant.now();
     }
   }
-
 }
