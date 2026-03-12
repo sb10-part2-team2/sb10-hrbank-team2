@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.time.Instant;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class Employee extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "department_id")
+    // 추후 부서 엔티티와 연동
     private Department department;
 
     @Column(nullable = false)
@@ -39,7 +41,8 @@ public class Employee extends BaseEntity {
     @Column(nullable = false)
     private EmployeeStatus status;
 
-
+    // 추후 프로필 이미지 엔티티와 연동할 예정
+    @OneToMany(mappedBy = "employee")
     private BinaryContent profileImage;
 
 
