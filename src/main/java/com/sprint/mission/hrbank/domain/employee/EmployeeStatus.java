@@ -5,16 +5,16 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public enum EmployeeStatus {
-    WORKING("재직중"),
-    ON_LEAVE("휴직중"),
-    RESIGNED("퇴사");
+  ACTIVE("재직중"),
+  ON_LEAVE("휴직중"),
+  RESIGNED("퇴사");
 
-    @Getter
-    private final String status;
+  @Getter
+  private final String status;
 
-    public String getCode(){
-        return name();
-    }
+  public String getCode() {
+    return name();
+  }
 
 
 }
