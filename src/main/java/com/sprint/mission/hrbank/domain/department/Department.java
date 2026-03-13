@@ -1,6 +1,6 @@
 package com.sprint.mission.hrbank.domain.department;
 
-import com.sprint.mission.hrbank.domain.baseentity.BaseEntity;
+import com.sprint.mission.hrbank.domain.baseentity.BaseUpdatableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Department extends BaseEntity {
+public class Department extends BaseUpdatableEntity {
 
   @Column(nullable = false, unique = true)
   private String name;
