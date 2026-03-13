@@ -23,8 +23,3 @@ reviews:
   auto_review:
     enabled: true # 자동리뷰 켬
     drafts: false # Draft PR은 자동 리뷰하지 않음
-    base_branches: # 자동리뷰를 main, dev를 대상으로 하는 PR에만 사용
-      - main
-      - dev
-    ignore_title_keywords: # PR 제목에 해당 키워드가 들어 있으면 자동 리뷰를 건너뜀
-      - "WIP" # Working in Progress
