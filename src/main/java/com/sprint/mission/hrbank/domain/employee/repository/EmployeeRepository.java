@@ -11,11 +11,11 @@ import org.springframework.data.jpa.repository.Query;
 public interface EmployeeRepository extends JpaRepository<Employee, Long>,
     JpaSpecificationExecutor<Employee> {
 
-    //    @Query("""
+  //    @Query("""
 //        select e from Employee e
 //        left join fetch e.department d
 //                where :req.nameOrEmail
 //        """
 //    )
-    Optional<Employee> findByRequest(EmployeeSearchRequest req);
+  Optional<Employee> findByRequest(EmployeeSearchRequest req);
 }
