@@ -1,0 +1,25 @@
+# https://docs.coderabbit.ai/
+
+language: ko-KR # 리뷰 언어를 한국어로 사용
+early_access: false # 심험 기능 사용 안함
+
+chat:
+  auto_reply: true # PR 코멘트에서 @coderabbitai 를 언급했을 때 자동 응답 활용을 위한 설정
+  # PR에서 바로 물어보고 응답받기 가능
+  # '이 파일만 다시 봐줘' 같은 작업 지정 가능
+
+reviews:
+  changed_files_summary: true # 변경된 파일에 대한 요약 추가
+  sequence_diagrams: true # 복잡한 흐름을 시퀀스 다이어그램으로 설명하게 함
+  collapse_walkthrough: true # walkthrough 색션을 접은 상태로 둠
+
+  profile: chill # 리뷰 스타일 지정 chill(기본값), assertive
+  request_changes_workflow: false # GitHub의 Request changes 워크플로우를 적극적으로 사용할지 여부
+  # false : 팀이 AI를 보조 Reviewer로 사용하고 싶을 때 적합
+  high_level_summary: true # 리뷰 상단에 이번 PR이 무엇을 바꾸는지 큰 그림 요약을 붙임
+  poem: false # 리뷰에 재미 요소 넣지 않음
+  review_status: true # 리뷰 완료 상태나 진행 상태를 PR에 표시
+  review_details: false # 리뷰에서 파일/라인 단위의 상세 walkthrough를 줄이는 설정
+  auto_review:
+    enabled: true # 자동리뷰 켬
+    drafts: false # Draft PR은 자동 리뷰하지 않음
