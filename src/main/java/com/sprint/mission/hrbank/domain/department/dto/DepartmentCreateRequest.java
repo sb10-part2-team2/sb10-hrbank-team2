@@ -1,18 +1,8 @@
 package com.sprint.mission.hrbank.domain.department.dto;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+public record DepartmentCreateRequest(
+    String name,
+    String description,
+    String establishedDate) {
 
-@Getter
-@RequiredArgsConstructor
-public class DepartmentCreateRequest {
-
-  private final String name;
-  private final String description;
-  private final String establishedDate;
-
-  public static DepartmentCreateRequest of(String name, String description,
-      String establishedDate) {
-    return new DepartmentCreateRequest(name, description, establishedDate);
-  }
 }

@@ -1,7 +1,7 @@
 package com.sprint.mission.hrbank.domain.department;
 
 import com.sprint.mission.hrbank.domain.department.dto.DepartmentCreateRequest;
-import com.sprint.mission.hrbank.domain.department.dto.DepartmentResponse;
+import com.sprint.mission.hrbank.domain.department.dto.DepartmentDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ public class DepartmentController {
   private final DepartmentService departmentService;
 
   @PostMapping()
-  public ResponseEntity<DepartmentResponse> createDepartment(
+  public ResponseEntity<DepartmentDto> createDepartment(
       @RequestBody DepartmentCreateRequest request) {
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(departmentService.createDepartment(request));

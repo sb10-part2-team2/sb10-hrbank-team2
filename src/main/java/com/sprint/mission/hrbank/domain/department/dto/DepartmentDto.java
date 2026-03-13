@@ -1,8 +1,10 @@
 package com.sprint.mission.hrbank.domain.department.dto;
 
-public record DepartmentUpdateRequest(
+public record DepartmentDto(
+    long id,
     String name,
     String description,
-    String establishedDate) {
+    String establishedDate,
+    long employeeCount) {
 
 }

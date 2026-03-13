@@ -1,7 +1,7 @@
 package com.sprint.mission.hrbank.domain.department;
 
 import com.sprint.mission.hrbank.domain.department.dto.DepartmentCreateRequest;
-import com.sprint.mission.hrbank.domain.department.dto.DepartmentResponse;
+import com.sprint.mission.hrbank.domain.department.dto.DepartmentDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,17 +12,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class DepartmentService {
 
   private final DepartmentRepository departmentRepository;
+  private final DepartmentMapper departmentMapper;
 
-  public DepartmentResponse createDepartment(DepartmentCreateRequest request) {
-    if (departmentRepository.existsByName(request.getName())) {
+  public DepartmentDto createDepartment(DepartmentCreateRequest request) {
+    if (departmentRepository.existsByName(request.name())) {
       throw new RuntimeException("동일한 이름을 가진 부서가 있습니다");
     }
 
-    Department department = new Department(
-        request.getName(),
-        request.getDescription(),
-        request.getEstablishedDate());
+    Department department = departmentMapper.toEntity(request);
+    departmentRepository.save(department);
 
-    return DepartmentResponse.toDto(department, 0);
+    return departmentMapper.toDto(department, 0);
   }
 }
