@@ -3,6 +3,7 @@ package com.sprint.mission.hrbank.domain.backup.dto;
 import com.sprint.mission.hrbank.domain.backup.entity.BackupStatus;
 import java.time.Instant;
 
+// 백업 목록 조회용 dto
 public record BackupSearchRequest(
     String worker,
     BackupStatus status,
