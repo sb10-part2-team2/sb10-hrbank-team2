@@ -1,4 +1,4 @@
-package com.sprint.mission.hrbank.domain.backup;
+package com.sprint.mission.hrbank.domain.backup.dto;
 
 import java.time.Instant;
 
