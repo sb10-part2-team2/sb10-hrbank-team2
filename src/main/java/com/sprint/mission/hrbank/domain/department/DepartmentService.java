@@ -32,9 +32,9 @@ public class DepartmentService {
     if (request.name() != null &&
         !department.getName().equals(request.name())) {
       validateUniqueName(request.name());
-      department.updateFromDto(request);
     }
-
+    
+    department.updateFromDto(request);
     departmentRepository.save(department);
 //    Long employeeCount = employeeRepository.findAllByDepartmentId(departmentId).size(); 추구 repository가 추가되면..
 
