@@ -3,6 +3,7 @@ package com.sprint.mission.hrbank.domain.department;
 import com.sprint.mission.hrbank.domain.department.dto.DepartmentCreateRequest;
 import com.sprint.mission.hrbank.domain.department.dto.DepartmentDto;
 import com.sprint.mission.hrbank.domain.department.dto.DepartmentUpdateRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class DepartmentController {
 
   @PostMapping
   public ResponseEntity<DepartmentDto> createDepartment(
-      @RequestBody DepartmentCreateRequest request) {
+      @Valid @RequestBody DepartmentCreateRequest request) {
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(departmentService.createDepartment(request));
   }
@@ -30,7 +31,7 @@ public class DepartmentController {
   @PatchMapping("/{id}")
   public ResponseEntity<DepartmentDto> updateDepartment(
       @PathVariable("id") Long departmentId,
-      @RequestBody DepartmentUpdateRequest request) {
+      @Valid @RequestBody DepartmentUpdateRequest request) {
     return ResponseEntity.status(HttpStatus.OK)
         .body(departmentService.updateDepartment(departmentId, request));
   }

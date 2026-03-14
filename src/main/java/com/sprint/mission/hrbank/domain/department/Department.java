@@ -36,11 +36,9 @@ public class Department extends BaseUpdatableEntity {
         !this.description.equals(req.description())) {
       this.description = req.description();
     }
-    if (req.establishedDate() != null) {
-      LocalDate newDate = LocalDate.parse(req.establishedDate());
-      if (!this.establishedDate.equals(newDate)) {
-        this.establishedDate = newDate;
-      }
+    if (req.establishedDate() != null &&
+        !this.establishedDate.equals(req.establishedDate())) {
+      this.establishedDate = req.establishedDate();
     }
   }
 }

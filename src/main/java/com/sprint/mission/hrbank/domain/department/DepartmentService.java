@@ -29,11 +29,12 @@ public class DepartmentService {
     Department department = departmentRepository.findById(departmentId)
         .orElseThrow(() -> new RuntimeException("해당하는 부서가 없습니다"));
 
-    if (!department.getName().equals(request.name())) {
+    if (request.name() != null &&
+        !department.getName().equals(request.name())) {
       validateUniqueName(request.name());
+      department.updateFromDto(request);
     }
 
-    department.updateFromDto(request);
     departmentRepository.save(department);
 //    Long employeeCount = employeeRepository.findAllByDepartmentId(departmentId).size(); 추구 repository가 추가되면..
 
