@@ -6,12 +6,12 @@
 
 # 팀원 구성
 
-김성경 (개인 Github 링크)  
-박나경(개인 Github 링크)  
-최현호 (개인 Github 링크)  
-정수현 (개인 Github 링크)
-조성진 (개인 Github 링크)
-박승민 (개인 Github 링크)
+김성경 ([개인 Github 링크](https://github.com/conradrado))  
+박나경 ([개인 Github 링크](https://github.com/parkngg))  
+최현호 ([개인 Github 링크](https://github.com/CHH01))  
+정수현 ([개인 Github 링크](https://github.com/JeongSooHyeon))
+조성진 ([개인 Github 링크](https://github.com/Amperisk9))
+박승민 ([개인 Github 링크](https://github.com/raonPsm))
 ---
 
 # 프로젝트 소개
