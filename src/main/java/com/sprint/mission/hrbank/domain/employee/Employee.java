@@ -1,9 +1,9 @@
 package com.sprint.mission.hrbank.domain.employee;
 
 import com.sprint.mission.hrbank.domain.baseentity.BaseEntity;
+import com.sprint.mission.hrbank.domain.department.Department;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;

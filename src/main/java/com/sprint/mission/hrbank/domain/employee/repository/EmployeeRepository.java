@@ -5,7 +5,6 @@ import com.sprint.mission.hrbank.domain.employee.dto.EmployeeSearchRequest;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
 
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long>,
@@ -18,4 +17,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>,
 //        """
 //    )
   Optional<Employee> findByRequest(EmployeeSearchRequest req);
+
+  long countAllByDepartmentId(Long departmentId);
+
+  boolean existsByDepartmentId(Long departmentId);
 }
