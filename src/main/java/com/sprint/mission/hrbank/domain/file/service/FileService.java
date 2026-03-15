@@ -39,7 +39,7 @@ public class FileService {
   }
 
   // CREATE
-  // 실제 파일 저장 + 메타데이터 저장
+  // 실제 파일 저장 + 메타데이터 저장 -> 사진 저장
   @Transactional
   public StoredFile saveData(MultipartFile multipartFile) {
     if (multipartFile == null || multipartFile.isEmpty()) {
@@ -63,6 +63,12 @@ public class FileService {
       throw new IllegalArgumentException("잘못된 파일 경로입니다");
     }
 
+    try {
+      multipartFile.transferTo(targetPath); // transferTo: 파일을 경로에 저장
+    } catch (IOException e) {
+      throw new IllegalStateException("로컬 디스크에 파일 저장 중 오류가 발생하였습니다: " + e);
+    }
+
     StoredFile file = StoredFile.create(
         multipartFile.getOriginalFilename(),
         storedName,
@@ -74,7 +80,7 @@ public class FileService {
     return fileRepository.save(file);
   }
 
-  // 백업 파일 저장
+  // 백업 파일 저장 -> 로그 + CSV
   // TODO: CSV로 저장? -> 프로젝트 분석 필요
   @Transactional
   public StoredFile saveBackupData(String filename, String content, String contentType) {
@@ -119,7 +125,8 @@ public class FileService {
     return fileRepository.save(file);
   }
 
-  // UPDATE -> TODO: 하지 않는 이유 정리
+  // UPDATE
+  // 파일은 수정하는 것이 아니라, 기존 파일을 삭제하고 새로운 파일을 만드는 것이 좋음
 
   // READ
   @Transactional(readOnly = true)

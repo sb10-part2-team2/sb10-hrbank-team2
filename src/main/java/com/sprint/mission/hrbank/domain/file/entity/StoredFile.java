@@ -23,7 +23,7 @@ public class StoredFile extends BaseEntity {
   private String originalName;
 
   // 서버에 저장할 고유 파일명
-  @Column(nullable = false)
+  @Column(nullable = false, unique = true)
   private String storedName;
 
   @Column(nullable = false)
