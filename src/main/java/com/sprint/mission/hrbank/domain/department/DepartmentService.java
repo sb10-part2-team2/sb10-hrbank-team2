@@ -47,11 +47,12 @@ public class DepartmentService {
       throw new RuntimeException("해당하는 부서가 없습니다");
     }
 
-    if (employeeRepository.existsByDepartmentId(departmentId)) {
+    // 조건부 삭제 쿼리
+    int deletedCount = departmentRepository.deleteByIdIfNotEmployee(departmentId);
+
+    if (deletedCount == 0) {
       throw new RuntimeException("부서에 소속된 직원이 있어서 삭제할 수 없습니다");
     }
-
-    departmentRepository.deleteById(departmentId);
   }
 
   void validateUniqueName(String name) {
