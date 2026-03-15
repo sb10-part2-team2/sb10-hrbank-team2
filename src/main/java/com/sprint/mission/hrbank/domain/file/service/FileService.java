@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+// TODO: 저장해야 되는 파일 -> 프로필 이미지, 전체 직원 정보 CSV 파일, 에러 로그 .log 파일
 @Service
 public class FileService {
 
@@ -44,14 +46,21 @@ public class FileService {
       throw new IllegalArgumentException("업로드할 파일이 없거나 비어 있습니다");
     }
 
-    // 파일 이름 고유성 확보
-    String storedName = UUID.randomUUID() + "-" + multipartFile.getOriginalFilename();
-    Path targetPath = rootPath.resolve("files").resolve(storedName); // 파일 경로 생성
+    String originalFilename = multipartFile.getOriginalFilename();
+    if (originalFilename != null) {
+      // .getFileName() : 전체 경로에서 파일 이름(확장자 포함)만을 추출
+      originalFilename = Paths.get(originalFilename).getFileName().toString();
+    }
 
-    try {
-      multipartFile.transferTo(targetPath); // 파일을 로컬 디스크에 저장
-    } catch (IOException e) {
-      throw new IllegalStateException("파일 저장에 실패하였습니다", e);
+    // 파일 이름 고유성 확보
+    String storedName = UUID.randomUUID() + "-" + originalFilename;
+    Path targetPath = rootPath.resolve("files").resolve(storedName);
+
+    // 경로가 예상 디렉터리 내에 있는지 검증 - 보안 관련
+    // targetPath.normalize() -> 절대 경로로 변환
+    // startsWith(rootPath.resolve("files")) -> 최종 경로가 허용한 디렉터리안에서 시작하는지 확인
+    if (!targetPath.normalize().startsWith(rootPath.resolve("files"))) {
+      throw new IllegalArgumentException("잘못된 파일 경로입니다");
     }
 
     StoredFile file = StoredFile.create(
@@ -69,8 +78,14 @@ public class FileService {
   // TODO: CSV로 저장? -> 프로젝트 분석 필요
   @Transactional
   public StoredFile saveBackupData(String filename, String content, String contentType) {
-    String storedName = UUID.randomUUID() + "-" + filename; // 서버 내부 저장용 이름 생성
+    // 전체 경로에서 파일 이름(확장자 포함)만을 추출 - 파일명에서 경로 구분자 제거
+    String sanitizedFilename = Paths.get(filename).getFileName().toString();
+    String storedName = UUID.randomUUID() + "-" + sanitizedFilename;
     Path targetPath = rootPath.resolve("files").resolve(storedName); // 파일 경로 생성
+
+    if (!targetPath.normalize().startsWith(rootPath.resolve("files"))) {
+      throw new IllegalArgumentException("잘못된 파일 경로입니다");
+    }
 
     try {
       Files.writeString( // 문자열을 파일에 쓴다
