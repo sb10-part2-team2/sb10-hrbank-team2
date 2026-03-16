@@ -45,6 +45,7 @@ public class Employee extends BaseEntity {
   private EmployeeStatus status;
 
   // 추후 프로필 이미지 엔티티와 연동할 예정
+  // Employee.java에서 StoredFile과의 잘못된 연관관계를 수정 (OneToMany -> OneToOne)
   @OneToOne(mappedBy = "employee")
   private StoredFile profileImage;
 
