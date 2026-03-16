@@ -1,3 +1,9 @@
+buildscript {
+    ext {
+        queryDslVersion = "5.0.0"
+    }
+} // 빌드스크립트는 plugins 보다 위에 위치해야 하며, 해당 코드 블럭은 queryDsl의 버전을 명시하기 위함임.
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '4.0.3'
@@ -29,7 +35,7 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2' // Swagger UI
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Data JPA
-    implementation 'org.postgresql:postgresql:42.7.3' // PostgreSQL 드라이버
+    implementation 'org.postgresql:postgresql:42.7.3' // postgreSQL 드라이버
     runtimeOnly 'com.h2database:h2' // H2 Database
     implementation 'org.springframework.boot:spring-boot-h2console' // H2 콘솔 접근을 위한 유틸리티
 
@@ -44,6 +50,13 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test' // JPA 계층 단위 테스트
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test' // Web 계층 단위 테스트
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // JUnit 5 플랫폼 런처
+
+    // querydsl
+    implementation "com.querydsl:querydsl-jpa:5.0.0:jakarta"
+    annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
 }
 
 tasks.named('test') {
