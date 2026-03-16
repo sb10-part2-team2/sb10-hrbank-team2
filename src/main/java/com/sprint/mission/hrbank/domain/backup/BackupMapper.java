@@ -7,8 +7,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface BackupMapper {
 
-  @Mapping(target = "fileId", ignore = true)
-    // @Mapping(source = "backupFile.id", target = "fileId") // 추후 파일 연동 시 변경 예정
+  @Mapping(source = "backupFile.id", target = "fileId")
   BackupDto toDto(Backup backup);
 
   Backup toEntity(BackupDto backupDto);
