@@ -1,9 +1,14 @@
 package com.sprint.mission.hrbank.domain.changelog;
 
 import com.sprint.mission.hrbank.domain.employee.Employee;
+import java.time.Instant;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -11,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class ChangeLogService {
 
   private final ChangeLogRepository changeLogRepository;
+  private final ChangeLogMapper changeLogMapper;
 
   // 직원 추가/수정/삭제 시 호출
   public void createChangeLog(Employee before, Employee after, ChangeLogType type, String ipAddress,
@@ -24,10 +30,11 @@ public class ChangeLogService {
     Long profileImageId = null;
     if (target.getProfileImage() != null && !target.getProfileImage().isEmpty()) {
       // OneToMany이므로 리스트에서 하나를 가져오거나 대표 이미지를 로직에 맞게 선택
-      // profileImageId =
+      // 리스트의 첫 번째 이미지를 스냅샷 ID로 선택
+      profileImageId = target.getProfileImage().get(0).getId();
     }
 
-    // ChangeLog 생성
+    // ChangeLog 생성(Builder 패턴 사용)
     ChangeLog changeLog = ChangeLog.builder()
         .employeeId(target.getId())
         .type(type)
@@ -92,11 +99,47 @@ public class ChangeLogService {
 
 
   // 목록 조회
-  public ChangeLogDto getChangeLogs(ChangeLogSearchRequest request, Pageable pageable) {
-    Slice<ChangeLog> changeLogs = changeLogRepository.searchChangeLogs(request.employeeNumber(),
+  public CursorPageResponseChangeLogDto getChangeLogs(ChangeLogSearchRequest request) {
+
+    // 정렬 방향과 기준 설정 (기본값 : createdAt 내림차순)
+    Sort sort = Sort.by(
+        request.sortDirection()
+            .equalsIgnoreCase("asc") ? Direction.ASC : Direction.DESC, "createdAt");
+
+    // 페이지 크기와 정렬 조건으로 Pageable 생성
+    Pageable pageable = PageRequest.of(0, request.size(), sort);
+
+    // 검색 조건과 커서(idAfter) 기반으로 이력 목록 조회
+    Slice<ChangeLog> changeLogSlices = changeLogRepository.searchChangeLogs(
+        request.employeeNumber(),
         request.type(), request.memo(),
         request.ipAddress(), request.atFrom(), request.atTo(), request.idAfter(),
         pageable);
 
+    // Entity -> DTO 변환
+    List<ChangeLogDto> content = changeLogSlices.getContent().stream()
+        .map(changeLogMapper::toDto)
+        .toList();
+
+    // 검색 조건 기준 전체 건수 조회 (totalElements용, idAfter 제외)
+    long totalElements = changeLogRepository.countByConditions(request.employeeNumber(),
+        request.type(),
+        request.memo(),
+        request.ipAddress(), request.atFrom(), request.atTo());
+
+    // 다음 페이지가 있으면 마지막 요소의 id를 nextIdAfter로 설정
+    Long nextIdAfter = (changeLogSlices.hasNext() && !content.isEmpty())
+        ? content.get(content.size() - 1).id()
+        : null;
+
+    // 다음 페이지가 있으면 마지막 요소의 at을 nextCursor로 설정
+    Instant nextCursor = nextIdAfter != null
+        ? content.get(content.size() - 1).at()
+        : null;
+
+    return new CursorPageResponseChangeLogDto(
+        content, nextCursor, nextIdAfter, pageable.getPageSize(), totalElements,
+        changeLogSlices.hasNext()
+    );
   }
 }
