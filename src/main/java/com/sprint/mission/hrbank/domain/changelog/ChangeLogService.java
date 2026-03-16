@@ -142,4 +142,10 @@ public class ChangeLogService {
         changeLogSlices.hasNext()
     );
   }
+
+  // 상세 목록 조회
+  public ChangeLogDetailDto getChangeLogDetail(Long id) {
+
+  }
+
 }
