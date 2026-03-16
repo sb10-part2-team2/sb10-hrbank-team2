@@ -1,48 +1,26 @@
 package com.sprint.mission.hrbank.domain.changelog;
 
-import java.util.List;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ChangeLogMapper {
+@Mapper(componentModel = "spring")
+public interface ChangeLogMapper {
 
-  // Entity -> 목록 응답 DTO
-  public ChangeLogDto toResponse(ChangeLog entity) {
-    return new ChangeLogDto(
-        entity.getId(),
-        entity.getType().name(),
-        entity.getEmployeeNumberSnapshot(),
-        entity.getMemo(),
-        entity.getIpAddress(),
-        entity.getCreatedAt()
-    );
-  }
+  @Mapping(source = "employeeNumberSnapshot", target = "employeeNumber")
+  @Mapping(source = "createdAt", target = "at")
+  ChangeLogDto toDto(ChangeLog changeLog);
 
-  // Entity -> 상세 목록 응답 DTO
-  public ChangeLogDetailDto toDetailResponse(ChangeLog changeLog) {
-    List<DiffDto> diffs = changeLog.getChangeLogDiffs().stream()
-        .map(ChangeLogMapper::toDiffResponse)
-        .toList();
+  @Mapping(source = "employeeNumberSnapshot", target = "employeeNumber")
+  @Mapping(source = "createdAt", target = "at")
+  @Mapping(source = "employeeNameSnapshot", target = "employeeName")
+  @Mapping(source = "profileImageIdSnapshot", target = "profileImageId")
+  @Mapping(source = "changeLogDiffs", target = "diffs")
+  ChangeLogDetailDto toDetailDto(ChangeLog changeLog);
 
-    return new ChangeLogDetailDto(
-        changeLog.getId(),
-        changeLog.getType().name(),
-        changeLog.getEmployeeNumberSnapshot(),
-        changeLog.getMemo(),
-        changeLog.getIpAddress(),
-        changeLog.getCreatedAt(),
-        changeLog.getEmployeeNameSnapshot(),   // 엔티티 자체 필드 사용
-        changeLog.getProfileImageIdSnapshot(), // 엔티티 자체 필드 사용
-        diffs
-    );
-  }
-
-  // 수정 사항 DTO
-  public static DiffDto toDiffResponse(ChangeLogDiff diff) {
-    return new DiffDto(
-        diff.getPropertyName(),
-        diff.getBeforeValue(),
-        diff.getAfterValue()
-    );
-  }
+  @Mapping(source = "beforeValue", target = "before")
+  @Mapping(source = "afterValue", target = "after")
+  DiffDto toDiffDto(ChangeLogDiff diff);
 }
+

@@ -21,17 +21,16 @@ public class EmployeeController {
 
   private final EmployeeService employeeService; // 추후 구현 예정
 
-  @GetMapping()
+  @GetMapping
   public ResponseEntity<CursorPageResponseEmployeeDto> getEmployees(EmployeeSearchRequest req) {
     CursorPageResponseEmployeeDto response = employeeService.getEmployees(req);
-
     return ResponseEntity.ok(response);
   }
 
   @PostMapping
   public ResponseEntity<EmployeeDto> createEmployee(@RequestBody EmployeeCreateRequest req,
       @RequestPart MultipartFile profile) {
-    return employeeService.create(req, profile); // 추후 구현 예정
+    return ResponseEntity.ok(employeeService.create(req, profile));
   }
 
 

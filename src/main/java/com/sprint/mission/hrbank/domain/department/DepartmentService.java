@@ -3,6 +3,7 @@ package com.sprint.mission.hrbank.domain.department;
 import com.sprint.mission.hrbank.domain.department.dto.DepartmentCreateRequest;
 import com.sprint.mission.hrbank.domain.department.dto.DepartmentDto;
 import com.sprint.mission.hrbank.domain.department.dto.DepartmentUpdateRequest;
+import com.sprint.mission.hrbank.domain.employee.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +15,7 @@ public class DepartmentService {
 
   private final DepartmentRepository departmentRepository;
   private final DepartmentMapper departmentMapper;
-//  private final EmployeeRepository employeeRepository;     추후 추가되면
+  private final EmployeeRepository employeeRepository;
 
   public DepartmentDto createDepartment(DepartmentCreateRequest request) {
     validateUniqueName(request.name());
@@ -33,12 +34,25 @@ public class DepartmentService {
         !department.getName().equals(request.name())) {
       validateUniqueName(request.name());
     }
-    
+
     department.updateFromDto(request);
     departmentRepository.save(department);
-//    Long employeeCount = employeeRepository.findAllByDepartmentId(departmentId).size(); 추구 repository가 추가되면..
+    long employeeCount = employeeRepository.countAllByDepartmentId(departmentId);
 
-    return departmentMapper.toDto(department, -1);    // repository가 추가되면 교체예정
+    return departmentMapper.toDto(department, employeeCount);
+  }
+
+  public void deleteDepartment(Long departmentId) {
+    if (!departmentRepository.existsById(departmentId)) {
+      throw new RuntimeException("해당하는 부서가 없습니다");
+    }
+
+    // 조건부 삭제 쿼리
+    int deletedCount = departmentRepository.deleteByIdIfNotEmployee(departmentId);
+
+    if (deletedCount == 0) {
+      throw new RuntimeException("부서에 소속된 직원이 있어서 삭제할 수 없습니다");
+    }
   }
 
   void validateUniqueName(String name) {

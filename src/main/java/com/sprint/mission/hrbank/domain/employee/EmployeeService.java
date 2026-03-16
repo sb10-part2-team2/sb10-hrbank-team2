@@ -1,5 +1,7 @@
 package com.sprint.mission.hrbank.domain.employee;
 
+import com.sprint.mission.hrbank.domain.department.Department;
+import com.sprint.mission.hrbank.domain.department.DepartmentRepository;
 import com.sprint.mission.hrbank.domain.employee.dto.CursorPageResponseEmployeeDto;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeCreateRequest;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeDto;
@@ -17,11 +19,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class EmployeeService {
 
   private final EmployeeRepository employeeRepository;
-  //  private final DepartmentRepository departmentRepository;
+  private final DepartmentRepository departmentRepository;
   private final EmployeeMapper employeeMapper;
 
   public CursorPageResponseEmployeeDto getEmployees(EmployeeSearchRequest req) {
@@ -31,27 +33,25 @@ public class EmployeeService {
   }
 
 
+  @Transactional
   public EmployeeDto create(EmployeeCreateRequest req, MultipartFile profile) {
     Objects.requireNonNull(req, "유효하지 않은 요청입니다!");
 
-//    Optional<Department> department = departmentRepository.findById(req.departmentId());
+    Optional<Department> department = departmentRepository.findById(req.departmentId());
 
-//    if (department.isEmpty()) {
-//      throw new NoSuchElementException("해당 부서를 찾을 수 없음");
-//    }
+    if (department.isEmpty()) {
+      throw new NoSuchElementException("해당 부서를 찾을 수 없음");
+    }
 
-    // String으로 들어온 입사일을 LocalDate로 전환함.
-    LocalDate hireDate = LocalDate.parse(req.hireDate());
+    SortedFile file = null;
+    //TODO: 추후 FILE 부분 완성이 되면 구현 예정입니다.
+    if (profile != null) {
+//         file = new File();
 
-//    SortedFile file = null;
-//    //TODO: 추후 FILE 부분 완성이 되면 구현 예정입니다.
-//     if (profile != null) {
-////         file = new File();
-//
-//    //  file 영속화
-//    //  fileRepository.save(file);
-//     }
-//
+      //  file 영속화
+      //  fileRepository.save(file);
+    }
+
     Employee employee = new Employee(
         req.name(),
         req.email(),

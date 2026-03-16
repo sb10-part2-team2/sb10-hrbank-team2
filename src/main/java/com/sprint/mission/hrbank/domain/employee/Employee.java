@@ -2,12 +2,13 @@ package com.sprint.mission.hrbank.domain.employee;
 
 import com.sprint.mission.hrbank.domain.baseentity.BaseEntity;
 import com.sprint.mission.hrbank.domain.department.Department;
+import com.sprint.mission.hrbank.domain.file.entity.StoredFile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import java.time.Instant;
 import java.time.LocalDate;
 import lombok.Data;
@@ -44,7 +45,7 @@ public class Employee extends BaseEntity {
   private EmployeeStatus status;
 
   // 추후 프로필 이미지 엔티티와 연동할 예정
-  @OneToMany(mappedBy = "employee")
+  @OneToOne(mappedBy = "employee")
   private StoredFile profileImage;
 
   Employee(String name, String email, Department department, String position, LocalDate hiredDate,

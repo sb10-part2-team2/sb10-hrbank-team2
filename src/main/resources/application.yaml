@@ -1,1 +1,9 @@
-spring.application.name=hrbank
+spring:
+  application:
+    name: hrbank
+
+hrbank:
+  storage:
+    local:
+      root-path: .hrbank/storage
+      # @Value("${hrbank.storage.local.root-path}") 를 통해서 할당됨

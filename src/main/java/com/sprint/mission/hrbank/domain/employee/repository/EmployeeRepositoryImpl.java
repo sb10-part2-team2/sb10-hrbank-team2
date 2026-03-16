@@ -45,7 +45,6 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryCustom {
             cursorCondition(req.cursor())
         )
         .orderBy(employee.hireDate.desc(), employee.id.desc())
-        .where(cursorCondition(req.cursor()))
         .limit(size + 1L)
         .fetch();
 
@@ -69,7 +68,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryCustom {
     Long total = queryFactory
         .select(employee.count())
         .from(employee)
-        .leftJoin(employee.department, department)
+        .join(employee.department, department)
         .where(nameOrEmailContains(req.nameOrEmail()),
             departmentNameEq(req.departmentName()),
             positionEq(req.position()),
@@ -111,18 +110,18 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryCustom {
     return StringUtils.hasText(employeeNumber) ? employee.employeeNumber.eq(employeeNumber) : null;
   }
 
-  private BooleanExpression hireDateGoe(String from) {
-    if (!StringUtils.hasText(from)) {
+  private BooleanExpression hireDateGoe(LocalDate from) {
+    if (from == null) {
       return null;
     }
-    return employee.hireDate.goe(LocalDate.parse(from));
+    return employee.hireDate.goe(from);
   }
 
-  private BooleanExpression hireDateLoe(String to) {
-    if (!StringUtils.hasText(to)) {
+  private BooleanExpression hireDateLoe(LocalDate to) {
+    if (to == null) {
       return null;
     }
-    return employee.hireDate.loe(LocalDate.parse(to));
+    return employee.hireDate.loe(to);
   }
 
   private BooleanExpression statusEq(EmployeeStatus status) {
