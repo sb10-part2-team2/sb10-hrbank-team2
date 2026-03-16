@@ -92,18 +92,20 @@ public class FileService {
   }
 
   // 백업 파일 저장 -> 로그 + CSV
-  // TODO: CSV로 저장? -> 프로젝트 분석 필요
+  //
+
   @Transactional
   public StoredFile saveBackupData(String filename, String content, String contentType) {
     if (filename == null || filename.isBlank()) {
       throw new IllegalArgumentException("유효한 파일명이 없습니다");
     }
+
     // 전체 경로에서 파일 이름(확장자 포함)만을 추출 - 파일명에서 경로 구분자 제거
     String sanitizedFilename = Paths.get(filename).getFileName().toString();
     if (sanitizedFilename.isBlank()) {
       throw new IllegalArgumentException("유효한 파일명이 없습니다");
     }
-    
+
     String storedName = UUID.randomUUID() + "-" + sanitizedFilename;
     Path targetPath = rootPath.resolve("files").resolve(storedName); // 파일 경로 생성
 
@@ -151,6 +153,39 @@ public class FileService {
       }
       throw e;
     }
+  }
+
+  // 이미 디스크에 작성이 완료된 파일의 경로를 받아 메타데이터만 DB에 등록
+  @Transactional
+  public StoredFile registerExistingFile(String originalFilename, String contentType,
+      Path targetPath) {
+    // 경로 검증
+    if (!targetPath.normalize().startsWith(rootPath.resolve("files"))) {
+      throw new IllegalArgumentException("허용되지 않은 파일 경로입니다");
+    }
+
+    // 파일 존재 여부 검증 및 크기 추출
+    long fileSize;
+    try {
+      fileSize = Files.size(targetPath);
+    } catch (IOException e) {
+      throw new IllegalArgumentException("해당 경로에서 파일을 찾을 수 없거나 크기를 읽을 수 없습니다: " + targetPath, e);
+    }
+
+    // 저장된 파일명 추출
+    String storedName = targetPath.getFileName().toString();
+
+    // 메타데이터 엔티티 생성
+    StoredFile file = StoredFile.create(
+        originalFilename,
+        storedName,
+        contentType,
+        fileSize,
+        targetPath.toString()
+    );
+
+    // DB 저장
+    return fileRepository.save(file);
   }
 
   // UPDATE
