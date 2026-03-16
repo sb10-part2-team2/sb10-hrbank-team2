@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,4 +23,12 @@ public class ChangeLogController {
     return ResponseEntity.ok(changeLogService.getChangeLogs(request));
   }
 
+  // 상세 이력 목록 조회
+  @GetMapping(value = "/{id}")
+  public ResponseEntity<ChangeLogDetailDto> getChangeLogDetail(
+      @PathVariable Long id) {
+    return ResponseEntity.ok(changeLogService.getChangeLogDetail(id));
+  }
+
+  
 }

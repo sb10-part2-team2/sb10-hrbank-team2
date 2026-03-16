@@ -3,6 +3,7 @@ package com.sprint.mission.hrbank.domain.changelog;
 import com.sprint.mission.hrbank.domain.employee.Employee;
 import java.time.Instant;
 import java.util.List;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -145,7 +146,9 @@ public class ChangeLogService {
 
   // 상세 목록 조회
   public ChangeLogDetailDto getChangeLogDetail(Long id) {
-
+    ChangeLog detailLog = changeLogRepository.findDetailById(id)
+        .orElseThrow(() -> new NoSuchElementException("해당 id의 상세정보를 찾지 못했습니다."));
+    return changeLogMapper.toDetailDto(detailLog);
   }
 
 }
