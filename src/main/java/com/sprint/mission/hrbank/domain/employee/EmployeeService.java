@@ -66,9 +66,10 @@ public class EmployeeService {
     return employeeMapper.entityToDto(saved); // 그 후 employeeDto 형식으로 리턴.ㅎ
   }
 
+  // 삭제를 수행하는 서비스 계층 메소드
   public void delete(Long id) {
     Objects.requireNonNull(id, "유효하지 않은 id입니다!");
-    employeeRepository.deleteById(id);
+    employeeRepository.deleteById(id); //JPARepository에 기본 내장된 deleteById 수행.
   }
 
 }
