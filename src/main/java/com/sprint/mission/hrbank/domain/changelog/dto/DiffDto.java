@@ -1,4 +1,4 @@
-package com.sprint.mission.hrbank.domain.changelog;
+package com.sprint.mission.hrbank.domain.changelog.dto;
 
 // 변경된 필드 하나하나의 정보
 public record DiffDto(

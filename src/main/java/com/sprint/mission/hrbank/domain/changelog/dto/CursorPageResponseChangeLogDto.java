@@ -1,4 +1,4 @@
-package com.sprint.mission.hrbank.domain.changelog;
+package com.sprint.mission.hrbank.domain.changelog.dto;
 
 import java.time.Instant;
 import java.util.List;

@@ -1,5 +1,10 @@
-package com.sprint.mission.hrbank.domain.changelog;
+package com.sprint.mission.hrbank.domain.changelog.mapper;
 
+import com.sprint.mission.hrbank.domain.changelog.ChangeLog;
+import com.sprint.mission.hrbank.domain.changelog.ChangeLogDiff;
+import com.sprint.mission.hrbank.domain.changelog.dto.ChangeLogDetailDto;
+import com.sprint.mission.hrbank.domain.changelog.dto.ChangeLogDto;
+import com.sprint.mission.hrbank.domain.changelog.dto.DiffDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.stereotype.Component;

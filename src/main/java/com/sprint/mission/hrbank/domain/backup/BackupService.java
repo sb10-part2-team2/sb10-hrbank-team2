@@ -1,6 +1,6 @@
 package com.sprint.mission.hrbank.domain.backup;
 
-import com.sprint.mission.hrbank.domain.changelog.ChangeLogRepository;
+import com.sprint.mission.hrbank.domain.changelog.repository.ChangeLogRepository;
 import java.time.Instant;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

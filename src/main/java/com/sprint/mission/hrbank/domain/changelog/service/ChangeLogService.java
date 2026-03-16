@@ -1,8 +1,17 @@
-package com.sprint.mission.hrbank.domain.changelog;
+package com.sprint.mission.hrbank.domain.changelog.service;
 
+import com.sprint.mission.hrbank.domain.changelog.ChangeLog;
+import com.sprint.mission.hrbank.domain.changelog.ChangeLogType;
+import com.sprint.mission.hrbank.domain.changelog.dto.ChangeLogDetailDto;
+import com.sprint.mission.hrbank.domain.changelog.dto.ChangeLogDto;
+import com.sprint.mission.hrbank.domain.changelog.dto.ChangeLogSearchRequest;
+import com.sprint.mission.hrbank.domain.changelog.dto.CursorPageResponseChangeLogDto;
+import com.sprint.mission.hrbank.domain.changelog.mapper.ChangeLogMapper;
+import com.sprint.mission.hrbank.domain.changelog.repository.ChangeLogRepository;
 import com.sprint.mission.hrbank.domain.employee.Employee;
 import java.time.Instant;
 import java.util.List;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -10,15 +19,18 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ChangeLogService {
 
   private final ChangeLogRepository changeLogRepository;
   private final ChangeLogMapper changeLogMapper;
 
   // 직원 추가/수정/삭제 시 호출
+  @Transactional
   public void createChangeLog(Employee before, Employee after, ChangeLogType type, String ipAddress,
       String memo) {
     if (before == null && after == null) {
@@ -28,10 +40,8 @@ public class ChangeLogService {
 
     // Null Safe하게 프로필 이미지 ID 추출
     Long profileImageId = null;
-    if (target.getProfileImage() != null && !target.getProfileImage().isEmpty()) {
-      // OneToMany이므로 리스트에서 하나를 가져오거나 대표 이미지를 로직에 맞게 선택
-      // 리스트의 첫 번째 이미지를 스냅샷 ID로 선택
-      profileImageId = target.getProfileImage().get(0).getId();
+    if (target.getProfileImage() != null) {
+      profileImageId = target.getProfileImage().getId();
     }
 
     // ChangeLog 생성(Builder 패턴 사용)
@@ -141,5 +151,17 @@ public class ChangeLogService {
         content, nextCursor, nextIdAfter, pageable.getPageSize(), totalElements,
         changeLogSlices.hasNext()
     );
+  }
+
+  // 상세 목록 조회
+  public ChangeLogDetailDto getChangeLogDetail(Long id) {
+    ChangeLog detailLog = changeLogRepository.findDetailById(id)
+        .orElseThrow(() -> new NoSuchElementException("해당 id의 상세정보를 찾지 못했습니다."));
+    return changeLogMapper.toDetailDto(detailLog);
+  }
+
+  // 수정 이력 건수 조회
+  public Long getChangeLogCount(Instant fromDate, Instant toDate) {
+    return changeLogRepository.countChangeLogs(fromDate, toDate);
   }
 }

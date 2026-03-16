@@ -7,3 +7,6 @@ hrbank:
     local:
       root-path: .hrbank/storage
       # @Value("${hrbank.storage.local.root-path}") 를 통해서 할당됨
+  backup:
+    # 1시간(3600000ms)마다 실행
+    interval-ms: 3600000

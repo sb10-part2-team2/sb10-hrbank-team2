@@ -1,5 +1,6 @@
-package com.sprint.mission.hrbank.domain.changelog;
+package com.sprint.mission.hrbank.domain.changelog.dto;
 
+import com.sprint.mission.hrbank.domain.changelog.ChangeLogType;
 import java.time.Instant;
 
 // 직원 정보 수정 이력 목록 조회 요청 데이터
