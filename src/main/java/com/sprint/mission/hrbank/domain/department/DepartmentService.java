@@ -45,9 +45,13 @@ public class DepartmentService {
 
   @Transactional(readOnly = true)
   public CursorPageResponseDepartmentDto findAllDepartment(DepartmentSearchRequest request) {
+    String normalizedCursor = Optional.ofNullable(request.cursor())
+        .filter(s -> !s.isBlank())
+        .orElse(null);
+
     if (request.size() < 1
-        || (request.cursor() != null && request.idAfter() == null)
-        || (request.cursor() == null && request.idAfter() != null)) {
+        || (normalizedCursor != null && request.idAfter() == null)
+        || (normalizedCursor == null && request.idAfter() != null)) {
       throw new RuntimeException("잘못된 요청입니다");
     }
 
@@ -55,12 +59,17 @@ public class DepartmentService {
     int sizeAddOne = request.size() + 1;
 
     // 검색 키워드
-    String keyword = request.nameOrDescription();
+    String keyword = Optional.ofNullable(request.nameOrDescription())
+        .filter(s -> !s.isBlank())
+        .orElse(null);
     // 정렬 기준
     String sortField = request.sortField();
+    if (!"name".equals(sortField) && !"establishedDate".equals(sortField)) {
+      throw new RuntimeException("잘못된 요청입니다");
+    }
     // 정렬기준이 establishedDate면 LocalDate 타입으로 변환
-    LocalDate cursorDate = Optional.ofNullable(request.cursor())
-        .filter(s -> !s.isBlank() && sortField.equals("establishedDate"))
+    LocalDate cursorDate = Optional.ofNullable(normalizedCursor)
+        .filter(s -> sortField.equals("establishedDate"))
         .map(LocalDate::parse)
         .orElse(null);
 
@@ -78,12 +87,12 @@ public class DepartmentService {
           ? departmentRepository.findByNameContainingOrDescriptionContainingOrderByEstablishedDateAsc(
           keyword, cursorDate, request.idAfter(), pageable)
           : departmentRepository.findByNameContainingOrDescriptionContainingOrderByNameAsc(
-              keyword, request.cursor(), request.idAfter(), pageable);
+              keyword, normalizedCursor, request.idAfter(), pageable);
       case DESC -> sortField.equals("establishedDate")
           ? departmentRepository.findByNameContainingOrDescriptionContainingOrderByEstablishedDateDesc(
           keyword, cursorDate, request.idAfter(), pageable)
           : departmentRepository.findByNameContainingOrDescriptionContainingOrderByNameDesc(
-              keyword, request.cursor(), request.idAfter(), pageable);
+              keyword, normalizedCursor, request.idAfter(), pageable);
     };
 
     int querySize = queryResults.size();
@@ -115,7 +124,7 @@ public class DepartmentService {
         .toList();
 
     // 검색 키워드 기준 총 부서수
-    long totalElements = keyword == null || keyword.isBlank()
+    long totalElements = keyword == null
         ? departmentRepository.count()
         : departmentRepository.countByNameOrDescriptionContaining(keyword);
 
