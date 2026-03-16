@@ -2,7 +2,7 @@ package com.sprint.mission.hrbank.domain.dashboard.controller;
 
 import com.sprint.mission.hrbank.domain.backup.BackupStatus;
 import com.sprint.mission.hrbank.domain.backup.dto.BackupDto;
-import com.sprint.mission.hrbank.domain.changelog.ChangeLogCountRequest;
+import com.sprint.mission.hrbank.domain.changelog.dto.ChangeLogCountRequest;
 import com.sprint.mission.hrbank.domain.dashboard.service.DashboardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

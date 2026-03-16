@@ -1,5 +1,7 @@
-package com.sprint.mission.hrbank.domain.changelog;
+package com.sprint.mission.hrbank.domain.changelog.repository;
 
+import com.sprint.mission.hrbank.domain.changelog.ChangeLog;
+import com.sprint.mission.hrbank.domain.changelog.ChangeLogType;
 import java.time.Instant;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
