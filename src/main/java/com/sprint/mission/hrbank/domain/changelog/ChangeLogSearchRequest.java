@@ -5,7 +5,7 @@ import java.time.Instant;
 // 직원 정보 수정 이력 목록 조회 요청 데이터
 public record ChangeLogSearchRequest(
     String employeeNumber,
-    String type,
+    ChangeLogType type,
     String memo,
     String ipAddress,
     Instant atFrom,

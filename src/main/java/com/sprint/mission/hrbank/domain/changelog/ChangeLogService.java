@@ -2,6 +2,8 @@ package com.sprint.mission.hrbank.domain.changelog;
 
 import com.sprint.mission.hrbank.domain.employee.Employee;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,6 +15,9 @@ public class ChangeLogService {
   // 직원 추가/수정/삭제 시 호출
   public void createChangeLog(Employee before, Employee after, ChangeLogType type, String ipAddress,
       String memo) {
+    if (before == null && after == null) {
+      throw new IllegalArgumentException("before와 after 중 하나는 반드시 필요합니다.");
+    }
     Employee target = after != null ? after : before;
 
     // Null Safe하게 프로필 이미지 ID 추출
@@ -55,10 +60,16 @@ public class ChangeLogService {
     }
 
     // 부서 수정 시
-    if (before.getDepartment() != null && after.getDepartment() != null
-        && !before.getDepartment().getId().equals(after.getDepartment().getId())) {
-      changeLog.addDiff("department", before.getDepartment().getName(),
-          after.getDepartment().getName());
+    Long beforeDepartmentId =
+        before.getDepartment() != null ? before.getDepartment().getId() : null;
+    Long afterDepartmentId =
+        after.getDepartment() != null ? after.getDepartment().getId() : null;
+    if (!java.util.Objects.equals(beforeDepartmentId, afterDepartmentId)) {
+      String beforeDepartmentName =
+          before.getDepartment() != null ? before.getDepartment().getName() : null;
+      String afterDepartmentName =
+          after.getDepartment() != null ? after.getDepartment().getName() : null;
+      changeLog.addDiff("department", beforeDepartmentName, afterDepartmentName);
     }
 
     // 직함 수정 시
@@ -68,7 +79,7 @@ public class ChangeLogService {
 
     // 입사일 수정 시
     if (!before.getHireDate().equals(after.getHireDate())) {
-      changeLog.addDiff("hiredDate", before.getHireDate().toString(),
+      changeLog.addDiff("hireDate", before.getHireDate().toString(),
           after.getHireDate().toString());
     }
 
@@ -76,6 +87,16 @@ public class ChangeLogService {
     if (before.getStatus() != (after.getStatus())) {
       changeLog.addDiff("status", before.getStatus().name(), after.getStatus().name());
     }
+
+  }
+
+
+  // 목록 조회
+  public ChangeLogDto getChangeLogs(ChangeLogSearchRequest request, Pageable pageable) {
+    Slice<ChangeLog> changeLogs = changeLogRepository.searchChangeLogs(request.employeeNumber(),
+        request.type(), request.memo(),
+        request.ipAddress(), request.atFrom(), request.atTo(), request.idAfter(),
+        pageable);
 
   }
 }
