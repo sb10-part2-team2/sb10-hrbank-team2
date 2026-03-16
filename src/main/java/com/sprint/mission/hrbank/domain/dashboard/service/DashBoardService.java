@@ -1,7 +1,7 @@
 package com.sprint.mission.hrbank.domain.dashboard.service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import com.sprint.mission.hrbank.domain.changelog.ChangeLogCountRequest;
+import com.sprint.mission.hrbank.domain.changelog.ChangeLogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,22 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class DashBoardService {
 
-  public long getChangeLogsCount(String fromDateStr, String toDateStr) {
+  private final ChangeLogRepository changeLogRepository;
 
-    LocalDateTime fromDate;
-    LocalDateTime toDate;
-
-    if (toDateStr == null || toDateStr.isBlank()) {
-      toDate = LocalDateTime.now();
-    } else {
-      toDate = LocalDateTime.parse(toDateStr, DateTimeFormatter.ISO_DATE_TIME);
-    }
-
-    if (fromDateStr == null || fromDateStr.isBlank()) {
-      fromDate = toDate.minusDays(7);
-    } else {
-      fromDate = LocalDateTime.parse(fromDateStr, DateTimeFormatter.ISO_DATE_TIME);
-    }
-    return 12L;
+  public long getChangeLogsCount(ChangeLogCountRequest request) {
+    return changeLogRepository.countChangeLogs(request.fromDate(), request.toDate());
   }
 }
