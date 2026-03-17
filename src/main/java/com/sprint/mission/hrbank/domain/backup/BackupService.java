@@ -1,8 +1,11 @@
 package com.sprint.mission.hrbank.domain.backup;
 
 import com.sprint.mission.hrbank.domain.backup.dto.BackupDto;
+import com.sprint.mission.hrbank.domain.backup.dto.BackupSearchRequest;
+import com.sprint.mission.hrbank.domain.backup.dto.CursorPageResponseBackupDto;
 import com.sprint.mission.hrbank.domain.changelog.repository.ChangeLogRepository;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,17 @@ public class BackupService {
   private final BackupRepository backupRepository;
   private final ChangeLogRepository changeLogRepository;
   private final BackupMapper backupMapper;
+
+  @Transactional(readOnly = true)
+  public CursorPageResponseBackupDto getBackups(BackupSearchRequest request) {
+    List<Backup> backups = backupRepository.search(
+        request.worker(),
+        request.status(),
+        request.startedAtFrom(),
+        request.startedAtTo()
+    );
+    backups.sort(resolveg)
+  }
 
   @Transactional
   public Backup createBackup(String workerIp) {

@@ -1,6 +1,8 @@
 package com.sprint.mission.hrbank.domain.backup;
 
 import com.sprint.mission.hrbank.domain.backup.dto.BackupDto;
+import com.sprint.mission.hrbank.domain.backup.dto.BackupSearchRequest;
+import com.sprint.mission.hrbank.domain.backup.dto.CursorPageResponseBackupDto;
 import com.sprint.mission.hrbank.domain.changelog.IpUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -9,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +26,15 @@ public class BackupController {
   private final BackupService backupService;
   private final BackupMapper backupMapper;
 
+  // 데이터 백업 목록 조회
+  @GetMapping
+  public ResponseEntity<CursorPageResponseBackupDto> getBackups(
+      @ModelAttribute BackupSearchRequest request
+  ) {
+    return ResponseEntity.ok(backupService.getBackups(request));
+  }
+
+  // 데이터 백업 생성
   @PostMapping
   public ResponseEntity<BackupDto> createBackup(HttpServletRequest request) {
     // 클라이언트의 IP 주소 추출 (changelog.IpUtil 활용)
