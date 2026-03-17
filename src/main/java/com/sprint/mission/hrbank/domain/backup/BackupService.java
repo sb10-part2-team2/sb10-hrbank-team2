@@ -1,5 +1,6 @@
 package com.sprint.mission.hrbank.domain.backup;
 
+import com.sprint.mission.hrbank.domain.backup.dto.BackupDto;
 import com.sprint.mission.hrbank.domain.changelog.repository.ChangeLogRepository;
 import java.time.Instant;
 import java.util.Optional;
@@ -14,6 +15,7 @@ public class BackupService {
 
   private final BackupRepository backupRepository;
   private final ChangeLogRepository changeLogRepository;
+  private final BackupMapper backupMapper;
 
   @Transactional
   public Backup createBackup(String workerIp) {
@@ -33,6 +35,12 @@ public class BackupService {
     // 변경 사항 있으면 IN_PROGRESS 상태 저장
     Backup inProgressBackup = new Backup(workerIp, Instant.now(), BackupStatus.IN_PROGRESS);
     return backupRepository.save(inProgressBackup);
+  }
+
+  public Optional<BackupDto> getLatestBackup(BackupStatus status) {
+    BackupStatus searchStatus = (status == null) ? BackupStatus.COMPLETED : status;
+    return backupRepository.findFirstByStatusOrderByEndedAtDesc(searchStatus)
+        .map(backupMapper::toDto);
   }
 
   // ----- 헬퍼 메서드 -----

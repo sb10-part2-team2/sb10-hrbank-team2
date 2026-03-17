@@ -33,9 +33,16 @@ public class ChangeLogService {
   @Transactional
   public void createChangeLog(Employee before, Employee after, ChangeLogType type, String ipAddress,
       String memo) {
+// 1. 파라미터 검증 (400 Bad Request 성격)
     if (before == null && after == null) {
-      throw new IllegalArgumentException("before와 after 중 하나는 반드시 필요합니다.");
+      throw new IllegalArgumentException("이력을 생성하기 위한 직원 정보(before/after)가 모두 누락되었습니다.");
     }
+
+    // 수정(UPDATED)일 때는 반드시 전/후 데이터가 모두 있어야 함
+    if (type == ChangeLogType.UPDATED && (before == null || after == null)) {
+      throw new IllegalArgumentException("수정 이력을 생성하려면 수정 전/후 정보가 모두 필요합니다.");
+    }
+
     Employee target = after != null ? after : before;
 
     // Null Safe하게 프로필 이미지 ID 추출
@@ -111,10 +118,12 @@ public class ChangeLogService {
   // 목록 조회
   public CursorPageResponseChangeLogDto getChangeLogs(ChangeLogSearchRequest request) {
 
+    String sortProperty = request.sortField().equals("ipAddress") ? "ipAddress" : "createdAt";
+
     // 정렬 방향과 기준 설정 (기본값 : createdAt 내림차순)
     Sort sort = Sort.by(
         request.sortDirection()
-            .equalsIgnoreCase("asc") ? Direction.ASC : Direction.DESC, "createdAt");
+            .equalsIgnoreCase("asc") ? Direction.ASC : Direction.DESC, sortProperty);
 
     // 페이지 크기와 정렬 조건으로 Pageable 생성
     Pageable pageable = PageRequest.of(0, request.size(), sort);
@@ -162,6 +171,10 @@ public class ChangeLogService {
 
   // 수정 이력 건수 조회
   public Long getChangeLogCount(Instant fromDate, Instant toDate) {
+    // 5. 날짜 범위 검증 (시작일이 종료일보다 늦을 경우)
+    if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
+      throw new IllegalArgumentException("조회 시작일이 종료일보다 늦을 수 없습니다.");
+    }
     return changeLogRepository.countChangeLogs(fromDate, toDate);
   }
 }
