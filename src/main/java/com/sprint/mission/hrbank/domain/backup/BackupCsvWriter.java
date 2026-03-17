@@ -19,7 +19,8 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 /*
@@ -30,7 +31,7 @@ import org.springframework.util.StringUtils;
  * - CSV는 BufferedWriter로 디스크에 바로 기록
  */
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class BackupCsvWriter {
 
@@ -47,6 +48,7 @@ public class BackupCsvWriter {
   private int batchSize;
 
   // 전체 직원을 CSV로 저장
+  @Transactional
   public StoredFile writeEmployeeBackupCsv(Long backupId, Instant startedAt) throws IOException {
     // 디렉토리 생성 (존재하지 않을 경우)
     Path filesDir = storageRootPath.resolve("files");
@@ -105,6 +107,7 @@ public class BackupCsvWriter {
   }
 
   // 에러 발생 시 .log 파일 생성
+  @Transactional
   public StoredFile writeErrorLog(Long backupId, String workerIp, Instant startedAt,
       Exception exception)
       throws IOException {
