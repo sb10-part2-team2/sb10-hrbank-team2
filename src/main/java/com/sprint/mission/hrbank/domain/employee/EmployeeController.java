@@ -7,6 +7,7 @@ import com.sprint.mission.hrbank.domain.employee.dto.EmployeeSearchRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,12 +22,20 @@ public class EmployeeController {
 
   private final EmployeeService employeeService; // 추후 구현 예정
 
+  // 직원 전체 목록 조회 엔드포인트
   @GetMapping
   public ResponseEntity<CursorPageResponseEmployeeDto> getEmployees(EmployeeSearchRequest req) {
     CursorPageResponseEmployeeDto response = employeeService.getEmployees(req);
     return ResponseEntity.ok(response);
   }
 
+  // 직원 상세 조회 엔드포인트
+  @GetMapping("/{id}")
+  public ResponseEntity<EmployeeDto> getEmployeeDetail(@PathVariable Long id) {
+    return ResponseEntity.ok(employeeService.getDetail(id));
+  }
+
+  // 직원 생성 엔드포인트
   @PostMapping
   public ResponseEntity<EmployeeDto> createEmployee(@RequestBody EmployeeCreateRequest req,
       @RequestPart MultipartFile profile) {

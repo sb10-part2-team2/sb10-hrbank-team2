@@ -8,6 +8,7 @@ import com.sprint.mission.hrbank.domain.employee.dto.EmployeeDto;
 import com.sprint.mission.hrbank.domain.employee.repository.EmployeeRepository;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeSearchRequest;
 import com.sprint.mission.hrbank.domain.employee.mapper.EmployeeMapper;
+import com.sprint.mission.hrbank.domain.file.entity.StoredFile;
 import java.time.LocalDate;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -15,6 +16,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -26,15 +28,32 @@ public class EmployeeService {
   private final DepartmentRepository departmentRepository;
   private final EmployeeMapper employeeMapper;
 
+  // 직원 전체 목록 조회 서비스 메서드
+  @Transactional
   public CursorPageResponseEmployeeDto getEmployees(EmployeeSearchRequest req) {
     Objects.requireNonNull(req, ("유효하지 않은 요청!"));
-
     return employeeRepository.search(req);
   }
 
-
+  // 직원 상세 목록 조회 서비스 메서드
   @Transactional
-  public EmployeeDto create(EmployeeCreateRequest req, MultipartFile profile) {
+  public EmployeeDto getDetail(long id) {
+    Optional<Employee> optEmployee = employeeRepository.findById(id); // 존재 검증을 위해 Optional로 일단 받아놓음
+
+    // Optional 변수가 비어있음 => 유저 존재 X => 예외 던짐
+    if (optEmployee.isEmpty()) {
+      throw new NoSuchElementException("존재하지 않는 유저입니다.");
+    }
+
+    Employee employee = optEmployee.get();
+
+    return (employeeMapper.entityToDto(employee)); // EmployeeDto 변환 후 리턴.
+  }
+
+  // 직원 생성 서비스 메서드
+  @Transactional
+  public EmployeeDto create(@RequestPart EmployeeCreateRequest req,
+      @RequestPart MultipartFile profile) {
     Objects.requireNonNull(req, "유효하지 않은 요청입니다!");
 
     Optional<Department> department = departmentRepository.findById(req.departmentId());
@@ -43,7 +62,7 @@ public class EmployeeService {
       throw new NoSuchElementException("해당 부서를 찾을 수 없음");
     }
 
-    SortedFile file = null;
+    StoredFile file = null;
     //TODO: 추후 FILE 부분 완성이 되면 구현 예정입니다.
     if (profile != null) {
 //         file = new File();
