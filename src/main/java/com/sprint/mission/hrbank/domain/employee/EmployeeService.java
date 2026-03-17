@@ -35,6 +35,7 @@ public class EmployeeService {
   }
 
   public long getEmployeeCount(EmployeeCountRequest req) {
+    // 리포지토리에서 status가 null이면 기본적으로 재직자(ACTIVE, ON_LEAVE)를 카운트하도록 구현됨
     return employeeRepository.countEmployees(req);
   }
 

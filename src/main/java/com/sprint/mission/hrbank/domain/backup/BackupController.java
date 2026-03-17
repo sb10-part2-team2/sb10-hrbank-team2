@@ -40,7 +40,6 @@ public class BackupController {
       @Parameter(description = "백업 상태 (COMPLETED, FAILED, IN_PROGRESS, 기본값: COMPLETED)")
       @RequestParam(required = false) BackupStatus status) {
     return backupService.getLatestBackup(status)
-        .map(backupMapper::toDto)
         .map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.ok().build());
   }

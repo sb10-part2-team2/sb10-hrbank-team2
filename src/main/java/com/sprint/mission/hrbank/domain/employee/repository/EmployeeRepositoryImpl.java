@@ -92,11 +92,16 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryCustom {
 
   @Override
   public long countEmployees(EmployeeCountRequest req) {
+    // status가 null이면 기본적으로 RESIGNED를 제외한 재직자(ACTIVE, ON_LEAVE)만 카운트
+    BooleanExpression statusCondition = req.status() != null 
+        ? employee.status.eq(req.status()) 
+        : employee.status.ne(EmployeeStatus.RESIGNED);
+
     Long count = queryFactory
         .select(employee.count())
         .from(employee)
         .where(
-            statusEq(req.status()),
+            statusCondition,
             hireDateGoe(req.fromDate()),
             hireDateLoe(req.toDate())
         )
@@ -142,6 +147,10 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryCustom {
 
   private BooleanExpression statusEq(EmployeeStatus status) {
     return status != null ? employee.status.eq(status) : null;
+  }
+
+  private BooleanExpression statusNotResigned() {
+    return employee.status.ne(EmployeeStatus.RESIGNED);
   }
 
   private BooleanExpression cursorCondition(String cursor) {
