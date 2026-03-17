@@ -119,16 +119,25 @@ public class BackupCsvWriter {
     // 실제 디스크에 저장될 물리적 파일명 생성 (파일 중복 충돌 방지)
     Path logPath = filesDir.resolve(UUID.randomUUID() + "-" + originalFilename);
 
-    // 스택 트레이스를 문자열로 추출
-    StringWriter sw = new StringWriter();
-    exception.printStackTrace(new PrintWriter(sw));
+    try {
+      // 스택 트레이스를 문자열로 추출
+      StringWriter sw = new StringWriter();
+      exception.printStackTrace(new PrintWriter(sw));
+      String content = String.format(
+          "Backup ID: %d\nWorker: %s\nStartedAt: %s\nError: %s\n\nStackTrace:\n%s",
+          backupId, workerIp, startedAt, exception.getMessage(), sw.toString());
 
-    String content = String.format(
-        "Backup ID: %d\nWorker: %s\nStartedAt: %s\nError: %s\n\nStackTrace:\n%s",
-        backupId, workerIp, startedAt, exception.getMessage(), sw.toString());
+      // 파일 생성
+      Files.writeString(logPath, content, StandardCharsets.UTF_8);
 
-    Files.writeString(logPath, content, StandardCharsets.UTF_8);
-    return fileService.registerExistingFile(originalFilename, "text/plain", logPath);
+      // 생성된 파일을 FileService를 통해 DB 메타데이터로 등록
+      return fileService.registerExistingFile(originalFilename, "text/plain", logPath);
+
+    } catch (Exception e) {
+      // 파일 생성 중 실패 시 잔여 파일 삭제
+      Files.deleteIfExists(logPath);
+      throw e;
+    }
   }
 
   // ----- 헬퍼 메서드 -----
