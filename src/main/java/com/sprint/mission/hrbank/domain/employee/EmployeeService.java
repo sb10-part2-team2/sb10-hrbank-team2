@@ -7,8 +7,12 @@ import com.sprint.mission.hrbank.domain.employee.dto.EmployeeCountRequest;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeCreateRequest;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeDto;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeSearchRequest;
+import com.sprint.mission.hrbank.domain.employee.dto.EmployeeTrendDto;
+import com.sprint.mission.hrbank.domain.employee.dto.EmployeeTrendInterval;
 import com.sprint.mission.hrbank.domain.employee.mapper.EmployeeMapper;
 import com.sprint.mission.hrbank.domain.employee.repository.EmployeeRepository;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -39,6 +43,30 @@ public class EmployeeService {
     return employeeRepository.countEmployees(req);
   }
 
+  public List<EmployeeTrendDto> getEmployeeTrend(LocalDate from, LocalDate to, EmployeeTrendInterval interval) {
+    // toDate가 없으면 현재 일시
+    if (to == null) {
+      to = LocalDate.now();
+    }
+    // fromDate가 없으면 interval에 따라 자동 계산
+    if (from == null) {
+      from = calculateFromDate(to, interval);
+    }
+
+    // 리포지토리에서 시계열 데이터(0 채우기 포함) 조회
+    return employeeRepository.getEmployeeTrend(from, to, interval);
+  }
+
+  private LocalDate calculateFromDate(LocalDate to, EmployeeTrendInterval interval) {
+    return switch (interval) {
+      case DAILY -> to.minusDays(12);
+      case WEEKLY -> to.minusWeeks(12);
+      case MONTHLY -> to.minusMonths(12);
+      case QUARTERLY -> to.minusMonths(36); // 12분기 전
+      case YEARLY -> to.minusYears(12);
+    };
+  }
+
   // 직원 상세 목록 조회 서비스 메서드
   @Transactional
   public EmployeeDto getDetail(long id) {
@@ -59,6 +87,7 @@ public class EmployeeService {
     if (department.isEmpty()) {
       throw new NoSuchElementException("해당 부서를 찾을 수 없음");
     }
+
 //
 //    StoredFile file = null;
 //    //TODO: 추후 FILE 부분 완성이 되면 구현 예정입니다.

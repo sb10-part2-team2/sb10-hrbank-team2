@@ -12,8 +12,11 @@ import com.sprint.mission.hrbank.domain.employee.dto.CursorPageResponseEmployeeD
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeCountRequest;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeDto;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeSearchRequest;
+import com.sprint.mission.hrbank.domain.employee.dto.EmployeeTrendDto;
+import com.sprint.mission.hrbank.domain.employee.dto.EmployeeTrendInterval;
 import com.sprint.mission.hrbank.domain.employee.mapper.EmployeeMapper;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -115,6 +118,74 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryCustom {
     return count == null ? 0L : count;
   }
 
+  @Override
+  public List<EmployeeTrendDto> getEmployeeTrend(LocalDate from, LocalDate to, EmployeeTrendInterval interval) {
+    List<EmployeeTrendDto> result = new ArrayList<>();
+    LocalDate current = from;
+    long previousCount = -1;
+
+    // from부터 to까지 interval 단위로 시계열 루프 실행 (빈 구간도 포함)
+    while (!current.isAfter(to)) {
+      final LocalDate snapshotDate = getSnapshotDate(current, interval);
+      
+      // 해당 시점의 총 직원 수 집계 (그 날짜 기준 입사자 중 퇴사자 제외)
+      Long count = queryFactory
+          .select(employee.count())
+          .from(employee)
+          .where(
+              employee.hireDate.loe(snapshotDate),
+              statusNotResigned()
+          )
+          .fetchOne();
+
+      long currentCount = count != null ? count : 0L;
+      long change = 0;
+      double changeRate = 0.0;
+
+      // 이전 시점과 비교하여 증감 및 증감률 계산
+      if (previousCount != -1) {
+        change = currentCount - previousCount;
+        if (previousCount > 0) {
+          changeRate = (double) change / previousCount * 100;
+          changeRate = Math.round(changeRate * 10.0) / 10.0;
+        } else if (change > 0) {
+          changeRate = 100.0;
+        }
+      }
+
+      result.add(new EmployeeTrendDto(snapshotDate, currentCount, change, changeRate));
+      
+      previousCount = currentCount;
+      current = getNextDate(current, interval);
+    }
+    
+    return result;
+  }
+
+  private LocalDate getSnapshotDate(LocalDate date, EmployeeTrendInterval interval) {
+    return switch (interval) {
+      case DAILY -> date;
+      case WEEKLY -> date.with(java.time.DayOfWeek.SUNDAY);
+      case MONTHLY -> date.withDayOfMonth(date.lengthOfMonth());
+      case QUARTERLY -> {
+        int month = date.getMonthValue();
+        int lastMonthOfQuarter = ((month - 1) / 3 + 1) * 3;
+        yield date.withMonth(lastMonthOfQuarter).withDayOfMonth(date.withMonth(lastMonthOfQuarter).lengthOfMonth());
+      }
+      case YEARLY -> date.withDayOfYear(date.lengthOfYear());
+    };
+  }
+
+  private LocalDate getNextDate(LocalDate date, EmployeeTrendInterval interval) {
+    return switch (interval) {
+      case DAILY -> date.plusDays(1);
+      case WEEKLY -> date.plusWeeks(1);
+      case MONTHLY -> date.plusMonths(1);
+      case QUARTERLY -> date.plusMonths(3);
+      case YEARLY -> date.plusYears(1);
+    };
+  }
+
   // 이름or이메일 필드가 포함되었는지 확인하고 없으면 null 리턴
   private BooleanExpression nameOrEmailContains(String keyword) {
     if (!StringUtils.hasText(keyword)) {
@@ -152,6 +223,10 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryCustom {
 
   private BooleanExpression statusEq(EmployeeStatus status) {
     return status != null ? employee.status.eq(status) : null;
+  }
+
+  private BooleanExpression statusNotResigned() {
+    return employee.status.ne(EmployeeStatus.RESIGNED);
   }
   
   private BooleanExpression cursorCondition(String cursor) {
