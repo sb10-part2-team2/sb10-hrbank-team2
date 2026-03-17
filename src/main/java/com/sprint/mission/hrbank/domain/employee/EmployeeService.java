@@ -67,8 +67,12 @@ public class EmployeeService {
   }
 
   // 삭제를 수행하는 서비스 계층 메소드
+  @Transactional
   public void delete(Long id) {
     Objects.requireNonNull(id, "유효하지 않은 id입니다!");
+    if (!employeeRepository.existsById(id)) {
+      throw new NoSuchElementException("해당 유저를 찾을 수 없음!");
+    }
     employeeRepository.deleteById(id); //JPARepository에 기본 내장된 deleteById 수행.
   }
 
