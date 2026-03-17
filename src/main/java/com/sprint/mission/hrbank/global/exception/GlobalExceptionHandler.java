@@ -3,14 +3,20 @@ package com.sprint.mission.hrbank.global.exception;
 import com.sprint.mission.hrbank.global.response.ErrorResponse;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @Slf4j                                // 예상치 못한 예외처리 로그용
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
   // 예상치 못한 전역예외 처리
   @ExceptionHandler(Exception.class)
@@ -40,12 +46,22 @@ public class GlobalExceptionHandler {
 
   // Custom 예외
   @ExceptionHandler(CustomException.class)
-  public ResponseEntity<ErrorResponse<?>> handleConstraintViolationException(
-      CustomException e) {
+  public ResponseEntity<ErrorResponse<?>> handleCustomException(CustomException e) {
     ErrorResponse<?> errorResponse = ErrorResponse.of(
         // 시연용 swagger에서는 message는 Exception 이름, details는 예외 일반내용 이렇게 정의되어 있어서
         // Exception 이름을 제거하고 대신 CODE로 변경하기로 합의되었습니다
         e.getStatus(), e.getCode(), e.getMessage());
     return ResponseEntity.status(errorResponse.getStatus()).body(errorResponse);
+  }
+
+  // ResponseEntityExceptionHandler의 Spring 전체 에러핸들용. 500이 될 것을 400번대로 반환
+  @Override
+  protected ResponseEntity<Object> createResponseEntity(
+      @Nullable Object body, @NonNull HttpHeaders headers, HttpStatusCode status,
+      @NonNull WebRequest request) {
+
+    ErrorResponse<String> response = ErrorResponse.of(
+        status.value(), "CLIENT_ERROR", "요청 처리 중 오류가 발생했습니다");
+    return ResponseEntity.status(status).body(response);
   }
 }
