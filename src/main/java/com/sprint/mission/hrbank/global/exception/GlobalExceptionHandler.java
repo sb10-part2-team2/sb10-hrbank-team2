@@ -4,7 +4,6 @@ import com.sprint.mission.hrbank.global.response.ErrorResponse;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -56,12 +55,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
   // ResponseEntityExceptionHandler의 Spring 전체 에러핸들용. 500이 될 것을 400번대로 반환
   @Override
-  protected ResponseEntity<Object> createResponseEntity(
-      @Nullable Object body, @NonNull HttpHeaders headers, HttpStatusCode status,
-      @NonNull WebRequest request) {
-
-    ErrorResponse<String> response = ErrorResponse.of(
+  protected ResponseEntity<Object> handleExceptionInternal(
+      @NonNull Exception ex, Object body, @NonNull HttpHeaders headers,
+      HttpStatusCode status, @NonNull WebRequest request) {
+    ErrorResponse<?> errorResponse = ErrorResponse.of(
         status.value(), "CLIENT_ERROR", "요청 처리 중 오류가 발생했습니다");
-    return ResponseEntity.status(status).body(response);
+    return super.handleExceptionInternal(ex, errorResponse, headers, status, request);
   }
 }
