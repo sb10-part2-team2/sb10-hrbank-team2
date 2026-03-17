@@ -11,7 +11,7 @@ public enum BackupStatus {
   SKIPPED("건너뜀");
 
   @Getter
-  private final String status;
+  private final String description;
 
   public String getCode() {
     return name();

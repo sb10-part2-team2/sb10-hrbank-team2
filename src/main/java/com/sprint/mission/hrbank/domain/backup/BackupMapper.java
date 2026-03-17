@@ -7,6 +7,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface BackupMapper {
 
+  @Mapping(source = "status.description", target = "status")
   @Mapping(source = "backupFile.id", target = "fileId")
   BackupDto toDto(Backup backup);
 
