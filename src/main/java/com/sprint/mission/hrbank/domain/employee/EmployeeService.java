@@ -65,7 +65,7 @@ public class EmployeeService {
     StoredFile file = null;
     //TODO: 추후 FILE 부분 완성이 되면 구현 예정입니다.
     if (profile != null) {
-//         file = new File();
+      file = new StoredFile();
 
       //  file 영속화
       //  fileRepository.save(file);
@@ -84,4 +84,15 @@ public class EmployeeService {
     Employee saved = employeeRepository.save(employee); // 레포지토리 인터페이스를 통해 영속화
     return employeeMapper.entityToDto(saved); // 그 후 employeeDto 형식으로 리턴.ㅎ
   }
+
+  // 삭제를 수행하는 서비스 계층 메소드
+  @Transactional
+  public void delete(Long id) {
+    Objects.requireNonNull(id, "유효하지 않은 id입니다!");
+    if (!employeeRepository.existsById(id)) {
+      throw new NoSuchElementException("해당 유저를 찾을 수 없음!");
+    }
+    employeeRepository.deleteById(id); //JPARepository에 기본 내장된 deleteById 수행.
+  }
+
 }

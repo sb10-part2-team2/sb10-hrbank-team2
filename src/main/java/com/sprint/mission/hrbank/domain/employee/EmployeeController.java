@@ -6,6 +6,7 @@ import com.sprint.mission.hrbank.domain.employee.dto.EmployeeDto;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeSearchRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,5 +43,10 @@ public class EmployeeController {
     return ResponseEntity.ok(employeeService.create(req, profile));
   }
 
-
+  // id를 pathvariable로 받고 삭제 수행
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
+    employeeService.delete(id);
+    return ResponseEntity.noContent().build();
+  }
 }
