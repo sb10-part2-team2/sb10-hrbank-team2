@@ -118,10 +118,12 @@ public class ChangeLogService {
   // 목록 조회
   public CursorPageResponseChangeLogDto getChangeLogs(ChangeLogSearchRequest request) {
 
+    String sortProperty = request.sortField().equals("ipAddress") ? "ipAddress" : "createdAt";
+
     // 정렬 방향과 기준 설정 (기본값 : createdAt 내림차순)
     Sort sort = Sort.by(
         request.sortDirection()
-            .equalsIgnoreCase("asc") ? Direction.ASC : Direction.DESC, "createdAt");
+            .equalsIgnoreCase("asc") ? Direction.ASC : Direction.DESC, sortProperty);
 
     // 페이지 크기와 정렬 조건으로 Pageable 생성
     Pageable pageable = PageRequest.of(0, request.size(), sort);
