@@ -10,9 +10,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor                                   // MapStruct 활용 생성자
 @NoArgsConstructor(access = AccessLevel.PROTECTED)    // JPA 필수 생성자

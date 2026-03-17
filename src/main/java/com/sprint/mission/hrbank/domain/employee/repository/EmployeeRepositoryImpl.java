@@ -1,6 +1,5 @@
 package com.sprint.mission.hrbank.domain.employee.repository;
 
-
 import static com.sprint.mission.hrbank.domain.department.QDepartment.department;
 import static com.sprint.mission.hrbank.domain.employee.QEmployee.employee;
 
@@ -18,6 +17,7 @@ import com.sprint.mission.hrbank.domain.employee.mapper.EmployeeMapper;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -94,6 +94,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryCustom {
   }
 
   @Override
+<<<<<<< Updated upstream
   public long countEmployees(EmployeeCountRequest req) {
     BooleanExpression statusCondition;
 
@@ -184,6 +185,20 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryCustom {
       case QUARTERLY -> date.plusMonths(3);
       case YEARLY -> date.plusYears(1);
     };
+=======
+  public boolean existsByEmail(String email) {
+    return false;
+  }
+
+  @Override
+  public boolean existsByEmailAndIdNot(String email, Long id) {
+    return false;
+  }
+
+  @Override
+  public Optional<Employee> findByEmployeeId(long id) {
+    return Optional.empty();
+>>>>>>> Stashed changes
   }
 
   // 이름or이메일 필드가 포함되었는지 확인하고 없으면 null 리턴

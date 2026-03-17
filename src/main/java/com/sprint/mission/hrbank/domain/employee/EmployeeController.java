@@ -1,10 +1,13 @@
 package com.sprint.mission.hrbank.domain.employee;
 
+import com.sprint.mission.hrbank.domain.changelog.IpUtil;
+import com.sprint.mission.hrbank.domain.changelog.service.ChangeLogService;
 import com.sprint.mission.hrbank.domain.employee.dto.CursorPageResponseEmployeeDto;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeCountRequest;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeCreateRequest;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeDto;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeSearchRequest;
+<<<<<<< Updated upstream
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeTrendDto;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeTrendInterval;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,13 +16,21 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+=======
+import com.sprint.mission.hrbank.domain.employee.dto.EmployeeUpdateRequest;
+import jakarta.servlet.http.HttpServletRequest;
+>>>>>>> Stashed changes
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+<<<<<<< Updated upstream
 import org.springframework.web.bind.annotation.ModelAttribute;
+=======
+import org.springframework.web.bind.annotation.PatchMapping;
+>>>>>>> Stashed changes
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +46,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class EmployeeController {
 
   private final EmployeeService employeeService; // 추후 구현 예정
+  private final ChangeLogService changeLogService;
 
   @GetMapping("/count")
   @Operation(summary = "직원 수 조회", description = "지정된 조건에 맞는 직원 수를 조회합니다. 상태 필터링 및 입사일 기간 필터링이 가능합니다.")
@@ -81,6 +93,24 @@ public class EmployeeController {
     CursorPageResponseEmployeeDto response = employeeService.getEmployees(req);
     return ResponseEntity.ok(response);
   }
+
+  // 직원 수정 엔드포인트
+  @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<EmployeeDto> updateEmployee(
+      @PathVariable Long id, // 수정하고자 하는 Employee의 id
+      @RequestPart EmployeeUpdateRequest req, // 직원 정보 수정 dto
+      @RequestPart(required = false) MultipartFile profile, // (선택적) 프로필 이미지
+      HttpServletRequest request // ip 주소를 추출하기 위해 HttpServletRequest를 매개변수로 받음
+  ) {
+
+    // IP 유틸 함수를 통해 HttpServletRequest에서 IP를 추출함.
+    String clientIp = IpUtil.getClientIp(request);
+
+    // 서비스 계층의 update 메서드 실행
+    return ResponseEntity.ok(employeeService.update(id, req, profile, clientIp));
+
+  }
+
 
   // 직원 상세 조회 엔드포인트
   @GetMapping("/{id}")

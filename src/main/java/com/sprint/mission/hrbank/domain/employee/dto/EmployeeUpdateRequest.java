@@ -1,27 +1,18 @@
 package com.sprint.mission.hrbank.domain.employee.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import com.sprint.mission.hrbank.domain.employee.EmployeeStatus;
 import java.time.LocalDate;
 
-public record EmployeeCreateRequest(
-    @NotBlank
+public record EmployeeUpdateRequest(
     String name,
-
-    @NotBlank
     String email,
-
-    @NotNull
     Long departmentId,
-
-    @NotBlank
     String position,
-
-    @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     LocalDate hireDate,
-
-    String memo) {
+    EmployeeStatus status,
+    String memo
+) {
 
 }
