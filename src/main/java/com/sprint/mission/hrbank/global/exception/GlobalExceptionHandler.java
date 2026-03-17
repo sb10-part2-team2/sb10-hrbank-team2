@@ -4,6 +4,7 @@ import com.sprint.mission.hrbank.global.response.ErrorResponse;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -26,12 +27,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   }
 
   // DTO 예외
-  @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<ErrorResponse<?>> handleMethodArgumentNotValidException(
-      MethodArgumentNotValidException e) {
+  @Override
+  protected @Nullable ResponseEntity<Object> handleMethodArgumentNotValid(
+      @NonNull MethodArgumentNotValidException ex, @NonNull HttpHeaders headers,
+      @NonNull HttpStatusCode status, @NonNull WebRequest request) {
+
     ErrorResponse<?> errorResponse = ErrorResponse.of(
-        400, "VALIDATION_ERROR", e.getBindingResult());
-    return ResponseEntity.status(errorResponse.getStatus()).body(errorResponse);
+        400, "VALIDATION_ERROR", ex.getBindingResult());
+
+    return handleExceptionInternal(ex, errorResponse, headers, status, request);
   }
 
   // 파라미터 예외
@@ -57,9 +61,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   @Override
   protected ResponseEntity<Object> handleExceptionInternal(
       @NonNull Exception ex, Object body, @NonNull HttpHeaders headers,
-      HttpStatusCode status, @NonNull WebRequest request) {
-    ErrorResponse<?> errorResponse = ErrorResponse.of(
-        status.value(), "CLIENT_ERROR", "요청 처리 중 오류가 발생했습니다");
+      @NonNull HttpStatusCode status, @NonNull WebRequest request) {
+
+    Object errorResponse = (body instanceof ErrorResponse) ? body :
+        ErrorResponse.of(status.value(), "CLIENT_ERROR", "요청 처리 중 오류가 발생했습니다");
+
     return super.handleExceptionInternal(ex, errorResponse, headers, status, request);
   }
 }
