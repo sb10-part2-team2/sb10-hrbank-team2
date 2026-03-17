@@ -43,7 +43,7 @@ public class EmployeeController {
     return ResponseEntity.ok(employeeService.create(req, profile));
   }
 
-  // id를 pathvariable로 받고 삭제 수행
+  // id를 Path Variable로 받고 삭제 수행
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
     employeeService.delete(id);

@@ -74,9 +74,9 @@ public class EmployeeService {
     Employee employee = new Employee(
         req.name(),
         req.email(),
-        null,
+        department.get(),
         req.position(),
-        hireDate,
+        req.hireDate(),
         null
     );
 
