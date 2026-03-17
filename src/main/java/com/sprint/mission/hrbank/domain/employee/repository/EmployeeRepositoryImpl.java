@@ -9,6 +9,7 @@ import com.sprint.mission.hrbank.domain.employee.Employee;
 import com.sprint.mission.hrbank.domain.employee.EmployeeStatus;
 import com.sprint.mission.hrbank.domain.employee.dto.CursorPageResponseEmployeeDto;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeCountRequest;
+import com.sprint.mission.hrbank.domain.employee.dto.EmployeeDistributionDto;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeDto;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeSearchRequest;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeTrendDto;
@@ -119,8 +120,48 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryCustom {
   }
 
   @Override
-  public List<EmployeeTrendDto> getEmployeeTrend(LocalDate from, LocalDate to,
-      EmployeeTrendInterval interval) {
+  public List<EmployeeDistributionDto> getEmployeeDistribution(String groupBy, EmployeeStatus status) {
+    // 1. 전체 직원 수 조회 (비율 계산용)
+    Long total = queryFactory
+        .select(employee.count())
+        .from(employee)
+        .where(statusEq(status))
+        .fetchOne();
+
+    long totalCount = (total != null) ? total : 0L;
+
+    // 2. 그룹별 직원 수 조회
+    String normalizedGroupBy = (groupBy == null) ? "department" : groupBy.trim().toLowerCase();
+    var path = switch (normalizedGroupBy) {
+      case "department" -> department.name;
+      case "position" -> employee.position;
+      default -> throw new IllegalArgumentException("groupBy must be 'department' or 'position'");
+    };
+
+    List<com.querydsl.core.Tuple> results = queryFactory
+        .select(path, employee.count())
+        .from(employee)
+        .leftJoin(employee.department, department)
+        .where(statusEq(status))
+        .groupBy(path)
+        .fetch();
+
+    return results.stream()
+        .map(tuple -> {
+          String key = tuple.get(path);
+          Long countWrapper = tuple.get(employee.count());
+          long count = (countWrapper != null) ? countWrapper : 0L;
+
+          double percentage = (totalCount > 0) ? (double) count / totalCount * 100 : 0.0;
+          // 소수점 첫째 자리까지 반올림
+          percentage = Math.round(percentage * 10.0) / 10.0;
+          return new EmployeeDistributionDto(key, count, percentage);
+        })
+        .toList();
+  }
+
+  @Override
+  public List<EmployeeTrendDto> getEmployeeTrend(LocalDate from, LocalDate to, EmployeeTrendInterval interval) {
     List<EmployeeTrendDto> result = new ArrayList<>();
     LocalDate current = from;
     long previousCount = -1;
@@ -171,8 +212,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryCustom {
       case QUARTERLY -> {
         int month = date.getMonthValue();
         int lastMonthOfQuarter = ((month - 1) / 3 + 1) * 3;
-        yield date.withMonth(lastMonthOfQuarter)
-            .withDayOfMonth(date.withMonth(lastMonthOfQuarter).lengthOfMonth());
+        yield date.withMonth(lastMonthOfQuarter).withDayOfMonth(date.withMonth(lastMonthOfQuarter).lengthOfMonth());
       }
       case YEARLY -> date.withDayOfYear(date.lengthOfYear());
     };
@@ -186,20 +226,6 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryCustom {
       case QUARTERLY -> date.plusMonths(3);
       case YEARLY -> date.plusYears(1);
     };
-  }
-
-  public boolean existsByEmail(String email) {
-    return false;
-  }
-
-  @Override
-  public boolean existsByEmailAndIdNot(String email, Long id) {
-    return false;
-  }
-
-  @Override
-  public Optional<Employee> findByEmployeeId(long id) {
-    return Optional.empty();
   }
 
   // 이름or이메일 필드가 포함되었는지 확인하고 없으면 null 리턴

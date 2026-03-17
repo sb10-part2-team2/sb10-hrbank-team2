@@ -7,6 +7,7 @@ import com.sprint.mission.hrbank.domain.department.DepartmentRepository;
 import com.sprint.mission.hrbank.domain.employee.dto.CursorPageResponseEmployeeDto;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeCountRequest;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeCreateRequest;
+import com.sprint.mission.hrbank.domain.employee.dto.EmployeeDistributionDto;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeDto;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeSearchRequest;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeTrendDto;
@@ -15,6 +16,7 @@ import com.sprint.mission.hrbank.domain.employee.dto.EmployeeUpdateRequest;
 import com.sprint.mission.hrbank.domain.employee.mapper.EmployeeMapper;
 import com.sprint.mission.hrbank.domain.employee.repository.EmployeeRepository;
 import com.sprint.mission.hrbank.domain.file.service.FileService;
+import java.util.List;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -51,9 +53,11 @@ public class EmployeeService {
     return employeeRepository.countEmployees(req);
   }
 
-  // 직원 동향 조회 서비스 메서드
-  public List<EmployeeTrendDto> getEmployeeTrend(LocalDate from, LocalDate to,
-      EmployeeTrendInterval interval) {
+  public List<EmployeeDistributionDto> getEmployeeDistribution(String groupBy, EmployeeStatus status) {
+    return employeeRepository.getEmployeeDistribution(groupBy, status);
+  }
+
+  public List<EmployeeTrendDto> getEmployeeTrend(LocalDate from, LocalDate to, EmployeeTrendInterval interval) {
     // toDate가 없으면 현재 일시
     if (to == null) {
       to = LocalDate.now();

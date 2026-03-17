@@ -5,6 +5,7 @@ import com.sprint.mission.hrbank.domain.changelog.service.ChangeLogService;
 import com.sprint.mission.hrbank.domain.employee.dto.CursorPageResponseEmployeeDto;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeCountRequest;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeCreateRequest;
+import com.sprint.mission.hrbank.domain.employee.dto.EmployeeDistributionDto;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeDto;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeSearchRequest;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeTrendDto;
@@ -46,6 +47,17 @@ public class EmployeeController {
   @Operation(summary = "직원 수 조회", description = "지정된 조건에 맞는 직원 수를 조회합니다. 상태 필터링 및 입사일 기간 필터링이 가능합니다.")
   public ResponseEntity<Long> getEmployeeCount(@ModelAttribute EmployeeCountRequest request) {
     return ResponseEntity.ok(employeeService.getEmployeeCount(request));
+  }
+
+  @GetMapping("/stats/distribution")
+  @Operation(summary = "직원 분포 조회", description = "지정된 기준으로 그룹화된 직원 분포를 조회합니다.")
+  public ResponseEntity<List<EmployeeDistributionDto>> getDistribution(
+      @Parameter(description = "그룹화 기준 (department: 부서별, position: 직무별, 기본값: department)")
+      @RequestParam(defaultValue = "department") String groupBy,
+      @Parameter(description = "직원 상태 (재직중, 휴직중, 퇴사, 기본값: ACTIVE)")
+      @RequestParam(defaultValue = "ACTIVE") EmployeeStatus status
+  ) {
+    return ResponseEntity.ok(employeeService.getEmployeeDistribution(groupBy, status));
   }
 
   @GetMapping("/stats/trend")

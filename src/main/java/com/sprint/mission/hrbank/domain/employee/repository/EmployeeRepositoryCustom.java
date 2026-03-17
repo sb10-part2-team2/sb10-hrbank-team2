@@ -1,8 +1,10 @@
 package com.sprint.mission.hrbank.domain.employee.repository;
 
+import com.sprint.mission.hrbank.domain.employee.EmployeeStatus;
 import com.sprint.mission.hrbank.domain.employee.Employee;
 import com.sprint.mission.hrbank.domain.employee.dto.CursorPageResponseEmployeeDto;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeCountRequest;
+import com.sprint.mission.hrbank.domain.employee.dto.EmployeeDistributionDto;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeSearchRequest;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeTrendDto;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeTrendInterval;
@@ -16,8 +18,9 @@ public interface EmployeeRepositoryCustom {
 
   long countEmployees(EmployeeCountRequest req);
 
-  List<EmployeeTrendDto> getEmployeeTrend(LocalDate from, LocalDate to,
-      EmployeeTrendInterval interval);
+  List<EmployeeDistributionDto> getEmployeeDistribution(String groupBy, EmployeeStatus status);
+
+  List<EmployeeTrendDto> getEmployeeTrend(LocalDate from, LocalDate to, EmployeeTrendInterval interval);
 
   boolean existsByEmail(String email);
 
