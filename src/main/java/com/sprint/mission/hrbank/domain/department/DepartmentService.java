@@ -51,10 +51,12 @@ public class DepartmentService {
         .filter(s -> !s.isBlank())
         .orElse(null);
 
-    if (request.size() < 1
-        || (normalizedCursor != null && request.idAfter() == null)
+    if (request.size() < 1) {
+      throw new CustomException(ErrorCode.CLIENT_ERROR, "페이지 크기가 1 이상이어야 합니다");
+    }
+    if ((normalizedCursor != null && request.idAfter() == null)
         || (normalizedCursor == null && request.idAfter() != null)) {
-      throw new CustomException(ErrorCode.CLIENT_ERROR);
+      throw new CustomException(ErrorCode.CLIENT_ERROR, "커서, id가 둘 다 있거나 없어야 합니다");
     }
 
     // 커서기능을 하기위한 요청 크기 + 1
@@ -67,7 +69,7 @@ public class DepartmentService {
     // 정렬 기준
     String sortField = request.sortField();
     if (!"name".equals(sortField) && !"establishedDate".equals(sortField)) {
-      throw new CustomException(ErrorCode.CLIENT_ERROR);
+      throw new CustomException(ErrorCode.CLIENT_ERROR, "지원하지 않는 정렬기준입니다");
     }
     // 정렬기준이 establishedDate면 LocalDate 타입으로 변환
     LocalDate cursorDate = Optional.ofNullable(normalizedCursor)
