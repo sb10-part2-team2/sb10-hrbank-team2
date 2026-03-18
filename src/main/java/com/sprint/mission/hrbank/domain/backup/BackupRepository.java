@@ -13,4 +13,6 @@ public interface BackupRepository extends JpaRepository<Backup, Long> {
 
   Page<Backup> findAllByStatusOrderByStartedAtDesc(BackupStatus status,
       Pageable pageable); // 상태별 백업 이력 필터링 조회 (추후 페이징에 활용할 예정)
+
+  boolean existsByStatus(BackupStatus status);
 }
