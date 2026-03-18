@@ -6,6 +6,8 @@ import com.sprint.mission.hrbank.domain.department.dto.DepartmentDto;
 import com.sprint.mission.hrbank.domain.department.dto.DepartmentSearchRequest;
 import com.sprint.mission.hrbank.domain.department.dto.DepartmentUpdateRequest;
 import com.sprint.mission.hrbank.domain.employee.repository.EmployeeRepository;
+import com.sprint.mission.hrbank.global.exception.CustomException;
+import com.sprint.mission.hrbank.global.exception.ErrorCode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +39,7 @@ public class DepartmentService {
   @Transactional(readOnly = true)
   public DepartmentDto findDepartment(long departmentId) {
     Department department = departmentRepository.findById(departmentId)
-        .orElseThrow(() -> new RuntimeException("해당하는 부서가 없습니다"));
+        .orElseThrow(() -> new CustomException(ErrorCode.DEPARTMENT_NOT_FOUND));
     long employeeCount = employeeRepository.countAllByDepartmentId(departmentId);
 
     return departmentMapper.toDto(department, employeeCount);
@@ -52,7 +54,7 @@ public class DepartmentService {
     if (request.size() < 1
         || (normalizedCursor != null && request.idAfter() == null)
         || (normalizedCursor == null && request.idAfter() != null)) {
-      throw new RuntimeException("잘못된 요청입니다");
+      throw new CustomException(ErrorCode.CLIENT_ERROR);
     }
 
     // 커서기능을 하기위한 요청 크기 + 1
@@ -65,7 +67,7 @@ public class DepartmentService {
     // 정렬 기준
     String sortField = request.sortField();
     if (!"name".equals(sortField) && !"establishedDate".equals(sortField)) {
-      throw new RuntimeException("잘못된 요청입니다");
+      throw new CustomException(ErrorCode.CLIENT_ERROR);
     }
     // 정렬기준이 establishedDate면 LocalDate 타입으로 변환
     LocalDate cursorDate = Optional.ofNullable(normalizedCursor)
@@ -140,7 +142,7 @@ public class DepartmentService {
 
   public DepartmentDto updateDepartment(long departmentId, DepartmentUpdateRequest request) {
     Department department = departmentRepository.findById(departmentId)
-        .orElseThrow(() -> new RuntimeException("해당하는 부서가 없습니다"));
+        .orElseThrow(() -> new CustomException(ErrorCode.DEPARTMENT_NOT_FOUND));
 
     if (request.name() != null &&
         !department.getName().equals(request.name())) {
@@ -156,20 +158,20 @@ public class DepartmentService {
 
   public void deleteDepartment(Long departmentId) {
     if (!departmentRepository.existsById(departmentId)) {
-      throw new RuntimeException("해당하는 부서가 없습니다");
+      throw new CustomException(ErrorCode.DEPARTMENT_NOT_FOUND);
     }
 
     // 조건부 삭제 쿼리
     int deletedCount = departmentRepository.deleteByIdIfNotEmployee(departmentId);
 
     if (deletedCount == 0) {
-      throw new RuntimeException("부서에 소속된 직원이 있어서 삭제할 수 없습니다");
+      throw new CustomException(ErrorCode.DEPARTMENT_NOT_DELETABLE);
     }
   }
 
   void validateUniqueName(String name) {
     if (departmentRepository.existsByName(name)) {
-      throw new RuntimeException("동일한 이름을 가진 부서가 있습니다");
+      throw new CustomException(ErrorCode.DEPARTMENT_NAME_DUPLICATE);
     }
   }
 }
