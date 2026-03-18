@@ -1,0 +1,21 @@
+spring:
+  config:
+    activate:
+      on-profile: schema
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+      jakarta:
+        persistence:
+          schema-generation:
+            database:
+              # 실제 DB에는 DDL을 적용하지 않음 (파일 생성 전용)
+              action: none
+            scripts:
+              # 스키마 파일 생성 시 drop/create 스크립트 작성
+              action: drop-and-create
+              # CREATE하는 SQL 저장 경로
+              create-target: ./src/main/resources/schema-generated.sql
+              # DROP하는 SQL 저장 경로
+              drop-target: ./src/main/resources/schema-drop-generated.sql

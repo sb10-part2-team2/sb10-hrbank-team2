@@ -9,8 +9,8 @@
 김성경 ([개인 Github 링크](https://github.com/conradrado))  
 박나경 ([개인 Github 링크](https://github.com/parkngg))  
 최현호 ([개인 Github 링크](https://github.com/CHH01))  
-정수현 ([개인 Github 링크](https://github.com/JeongSooHyeon))
-조성진 ([개인 Github 링크](https://github.com/Amperisk9))
+정수현 ([개인 Github 링크](https://github.com/JeongSooHyeon))  
+조성진 ([개인 Github 링크](https://github.com/Amperisk9))  
 박승민 ([개인 Github 링크](https://github.com/raonPsm))
 ---
 
@@ -28,23 +28,28 @@ Batch 기반 데이터 관리 기능을 포함한 **Open EMS (Employee Managemen
 # 기술 스택
 
 ### Backend
+
 - Java
 - Spring Boot
 - Spring Data JPA
 
 ### Database
+
 - PostgreSQL
 - H2 (Local Development)
 
 ### Library
+
 - MapStruct
 - Spring Scheduler
 - SpringDoc OpenAPI (Swagger)
 
 ### Infrastructure
+
 - Railway
 
 ### 협업 Tool
+
 - Git & Github
 - Discord
 
@@ -155,7 +160,6 @@ Cursor 기반 페이지네이션 적용
 
 # 파일 구조
 
-
 src
 ┣ main
 ┃ ┣ java
@@ -181,7 +185,6 @@ src
 # API 문서
 
 Swagger UI
-
 
 /swagger-ui/index.html
 
@@ -213,4 +216,3 @@ Swagger UI
 
 Backend Developer  
 김성경
-

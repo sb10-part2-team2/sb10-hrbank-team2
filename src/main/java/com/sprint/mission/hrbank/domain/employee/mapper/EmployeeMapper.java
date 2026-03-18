@@ -20,7 +20,7 @@ public interface EmployeeMapper {
   @Mapping(target = "departmentId", source = "department.id")
   @Mapping(target = "departmentName", source = "department.name")
   @Mapping(target = "status", source = "status") // expression 제거
-  @Mapping(target = "profileImageId", ignore = true)
+  @Mapping(target = "profileImageId", source = "profileImage.id")
   // 구조 확정 전 임시
   EmployeeDto entityToDto(Employee employee);
 
@@ -30,3 +30,4 @@ public interface EmployeeMapper {
   // Employee -> CursorDto
   CursorPageResponseEmployeeDto entityToCursorResponseDto(Employee employee);
 }
+
