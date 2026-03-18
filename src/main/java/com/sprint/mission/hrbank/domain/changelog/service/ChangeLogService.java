@@ -128,11 +128,12 @@ public class ChangeLogService {
 
     // 페이지 크기와 정렬 조건으로 Pageable 생성
     Pageable pageable = PageRequest.of(0, request.size(), sort);
+    ChangeLogType type = (request.type() == ChangeLogType.ALL) ? null : request.type();
 
     // 검색 조건과 커서(idAfter) 기반으로 이력 목록 조회
     Slice<ChangeLog> changeLogSlices = changeLogRepository.searchChangeLogs(
         request.employeeNumber(),
-        request.type(), request.memo(),
+        type, request.memo(),
         request.ipAddress(), request.atFrom(), request.atTo(), request.idAfter(),
         pageable);
 
@@ -143,7 +144,7 @@ public class ChangeLogService {
 
     // 검색 조건 기준 전체 건수 조회 (totalElements용, idAfter 제외)
     long totalElements = changeLogRepository.countByConditions(request.employeeNumber(),
-        request.type(),
+        type,
         request.memo(),
         request.ipAddress(), request.atFrom(), request.atTo());
 
