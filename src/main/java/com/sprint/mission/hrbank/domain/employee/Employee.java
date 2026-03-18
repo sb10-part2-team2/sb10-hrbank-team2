@@ -85,7 +85,7 @@ public class Employee extends BaseUpdatableEntity {
           .name(this.department.getName())
           .build();
       d.setId(this.department.getId());
-      snapshot.getDepartment().setId(this.department.getId());
+      snapshot.setDepartment(d);
     }
 
     // 아이디와 이름만 가져옴. 파일을 통째로 가져오면 성능 저하 예측됨.
@@ -100,7 +100,7 @@ public class Employee extends BaseUpdatableEntity {
     return snapshot;
   }
 
-  void update(String name, String email, String position, LocalDate hireDate,
+  public void update(String name, String email, String position, LocalDate hireDate,
       EmployeeStatus status) {
     if (name != null) {
       this.setName(name);

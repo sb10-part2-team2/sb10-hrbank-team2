@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -102,7 +103,8 @@ public class EmployeeController {
   @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<EmployeeDto> updateEmployee(
       @PathVariable Long id, // 수정하고자 하는 Employee의 id
-      @RequestPart EmployeeUpdateRequest req, // 직원 정보 수정 dto
+
+      @Valid @RequestPart EmployeeUpdateRequest req, // 직원 정보 수정 dto
       @RequestPart(required = false) MultipartFile profile, // (선택적) 프로필 이미지
       HttpServletRequest request // ip 주소를 추출하기 위해 HttpServletRequest를 매개변수로 받음
   ) {
@@ -124,7 +126,7 @@ public class EmployeeController {
 
   // 직원 생성 엔드포인트
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<EmployeeDto> createEmployee(@RequestPart EmployeeCreateRequest req,
+  public ResponseEntity<EmployeeDto> createEmployee(@Valid @RequestPart EmployeeCreateRequest req,
       @RequestPart(required = false) MultipartFile profile) {
     return ResponseEntity.ok(employeeService.create(req, profile));
   }

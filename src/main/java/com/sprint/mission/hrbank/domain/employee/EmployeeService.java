@@ -134,6 +134,16 @@ public class EmployeeService {
     Objects.requireNonNull(ip, "유효하지 않은 IP입니다!");
     Objects.requireNonNull(id, "유효하지 않은 식별자입니다!");
 
+    if (req.name() != null && req.name().isBlank()) {
+      throw new IllegalArgumentException("이름은 공백일 수 없습니다.");
+    }
+    if (req.email() != null && req.email().isBlank()) {
+      throw new IllegalArgumentException("이메일은 공백일 수 없습니다.");
+    }
+    if (req.position() != null && req.position().isBlank()) {
+      throw new IllegalArgumentException("직함은 공백일 수 없습니다.");
+    }
+
     // 수정하고자 하는 직원을 id로 찾음.
     Employee employee = employeeRepository.findById(id)
         .orElseThrow(() -> new NoSuchElementException("유저가 존재하지 않음"));
