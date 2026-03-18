@@ -105,7 +105,7 @@ public class EmployeeController {
   public ResponseEntity<EmployeeDto> updateEmployee(
       @PathVariable Long id, // 수정하고자 하는 Employee의 id
 
-      @Valid @RequestPart EmployeeUpdateRequest req, // 직원 정보 수정 dto
+      @Valid @RequestPart EmployeeUpdateRequest employee, // 직원 정보 수정 dto
       @RequestPart(required = false) MultipartFile profile, // (선택적) 프로필 이미지
       HttpServletRequest request // ip 주소를 추출하기 위해 HttpServletRequest를 매개변수로 받음
   ) {
@@ -114,7 +114,7 @@ public class EmployeeController {
     String clientIp = IpUtil.getClientIp(request);
 
     // 서비스 계층의 update 메서드 실행
-    return ResponseEntity.ok(employeeService.update(id, req, profile, clientIp));
+    return ResponseEntity.ok(employeeService.update(id, employee, profile, clientIp));
 
   }
 
