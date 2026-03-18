@@ -12,8 +12,7 @@ spring:
     password: ${DB_PASSWORD:default_user}
   jpa:
     hibernate:
-      # create - 시작 시 drop + create
-      ddl-auto: none # Hiberante 기본 DDL 기능 끄기
+      ddl-auto: create # create - 시작 시 drop + create
     properties:
       hibernate:
         format_sql: true # 로그에 출력되는 SQL 포맷팅
