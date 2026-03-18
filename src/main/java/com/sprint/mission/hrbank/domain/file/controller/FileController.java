@@ -2,6 +2,10 @@ package com.sprint.mission.hrbank.domain.file.controller;
 
 import com.sprint.mission.hrbank.domain.file.entity.StoredFile;
 import com.sprint.mission.hrbank.domain.file.service.FileService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/files")
 @RequiredArgsConstructor
+@Tag(name = "파일 관리", description = "파일 관리 API")
 public class FileController {
 
   private final FileService fileService;
@@ -25,6 +30,15 @@ public class FileController {
   // 200 - 다운로드 성공
   // 404 - 파일을 찾을 수 없음
   // 500 - 서버 오류
+  @Operation(
+      summary = "파일 다운로드",
+      description = "파일을 다운로드합니다."
+  )
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "다운로드 성공"),
+      @ApiResponse(responseCode = "404", description = "파일을 찾을 수 없음"),
+      @ApiResponse(responseCode = "500", description = "서버 오류")
+  })
   @GetMapping("/{id}/download")
   public ResponseEntity<Resource> download(@PathVariable("id") Long id) {
     StoredFile metaData = fileService.getById(id); // 파일 메타데이터 조회
