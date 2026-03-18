@@ -25,7 +25,6 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -94,8 +93,9 @@ public class EmployeeService {
 
   // 직원 생성 서비스 메서드
   @Transactional
-  public EmployeeDto create(@RequestPart EmployeeCreateRequest req,
-      @RequestPart MultipartFile profile,
+  public EmployeeDto create(
+      EmployeeCreateRequest req,
+      MultipartFile profile,
       String clientIp) {
     Objects.requireNonNull(req, "유효하지 않은 요청입니다!");
 
@@ -103,6 +103,10 @@ public class EmployeeService {
 
     if (department.isEmpty()) {
       throw new NoSuchElementException("해당 부서를 찾을 수 없음");
+    }
+
+    if (employeeRepository.existsByEmail(req.email())) {
+      throw new IllegalStateException("이메일이 중복됩니다!");
     }
 
     StoredFile file = null;
