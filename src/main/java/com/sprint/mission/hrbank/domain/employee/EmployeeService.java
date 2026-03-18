@@ -136,7 +136,7 @@ public class EmployeeService {
         .orElseThrow(() -> new NoSuchElementException("유저가 존재하지 않음!"));
 
     // 수정 이력을 남김
-    changeLogService.createChangeLog(target, target, ChangeLogType.DELETED, clientIp, "직원 삭제");
+    changeLogService.createChangeLog(target, null, ChangeLogType.DELETED, clientIp, "직원 삭제");
 
     employeeRepository.deleteById(id); //JPA Repository에 기본 내장된 deleteById 수행.
 
