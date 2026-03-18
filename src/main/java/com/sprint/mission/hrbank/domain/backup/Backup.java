@@ -64,7 +64,7 @@ public class Backup extends BaseEntity {
   public Backup(String worker, Instant startedAt, BackupStatus status) {
     this.worker = worker;
     this.startedAt = startedAt;
-    this.endedAt = (status == BackupStatus.IN_PROGRESS) ? null : Instant.now();
+    this.endedAt = (status == BackupStatus.SKIPPED) ? null : Instant.now();
     changeStatus(status);
   }
 
