@@ -3,7 +3,7 @@ spring:
     name: hrbank
   config:
     activate:
-      on-profile: prod # 배포 환경 프로필 # FIXME: 배포 환경 프로필 설정값 변경하고 배포 필요
+      on-profile: prod # 배포 환경 프로필
   datasource:
     driver-class-name: org.postgresql.Driver
     # .env에 민감 정보 저장
@@ -17,19 +17,21 @@ spring:
       ddl-auto: none # Hiberante 기본 DDL 기능 끄기
     properties:
       hibernate:
-        format_sql: true # 로그에 출력되는 SQL 포맷팅
-        use_sql_comments: true # 로그 주석 추가
-      # open-in-view: false # OSIV 비활성화
+        format_sql: false # 로그에 출력되는 SQL 포맷팅
+        use_sql_comments: false # 로그 주석 추가
+      open-in-view: false # OSIV 비활성화
 
 logging:
   level:
-    org.hibernate.SQL: debug # 실행되는 SQL 문장 로그로 출력
-    org.hibernate.orm.jdbc.bind: trace # 바인딩 파라미터 값을 로그로 출력
+    # SQL 문장출력 끔(debug -> info)
+    org.hibernate.SQL: info # 실행되는 SQL 문장 로그로 출력
+    # 파라미터 바인딩 출력 끔(trace -> info)
+    org.hibernate.orm.jdbc.bind: info # 바인딩 파라미터 값을 로그로 출력
 
 hrbank:
   storage:
     local:
-      root-path: .hrbank/storage
+      root-path: /app/storage
       # @Value("${hrbank.storage.local.root-path}") 를 통해서 할당됨
   backup:
     # 1시간(3600000ms)마다 실행
