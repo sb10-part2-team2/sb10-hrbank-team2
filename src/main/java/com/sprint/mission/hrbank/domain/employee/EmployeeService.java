@@ -19,6 +19,7 @@ import com.sprint.mission.hrbank.domain.file.entity.StoredFile;
 import com.sprint.mission.hrbank.domain.file.service.FileService;
 import com.sprint.mission.hrbank.global.exception.CustomException;
 import com.sprint.mission.hrbank.global.exception.ErrorCode;
+import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -101,15 +102,10 @@ public class EmployeeService {
     Objects.requireNonNull(req, "유효하지 않은 요청입니다!");
 
     Department department = departmentRepository.findById(req.departmentId())
-        .orElseThrow(() -> new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS, "중복된 이메일입니다.")
-        );
-
-    if (department.isEmpty()) {
-      throw new NoSuchElementException("해당 부서를 찾을 수 없음");
-    }
+        .orElseThrow(() -> new EntityNotFoundException("부서를 찾을 수 없습니다. ID: " + req.departmentId()));
 
     if (employeeRepository.existsByEmail(req.email())) {
-      throw new IllegalStateException("이메일이 중복됩니다!");
+      throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS, "중복된 이메일입니다.");
     }
 
     StoredFile file = null;
