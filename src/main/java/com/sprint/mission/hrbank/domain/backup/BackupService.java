@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -20,6 +21,7 @@ public class BackupService {
   private final BackupCsvWriter backupCsvWriter;
   private final BackupMapper backupMapper;
 
+  @Transactional(propagation = Propagation.NOT_SUPPORTED)
   public Backup createBackup(String workerIp) {
     // 1. 백업 필요 여부 판단
     Optional<Backup> last = backupRepository.findFirstByStatusOrderByEndedAtDesc(
@@ -40,7 +42,6 @@ public class BackupService {
 
       // 4. [요구사항 Step 4-1] 성공 처리 (트랜잭션 분리)
       backupCommandService.markCompleted(inProgress.getId(), file);
-      return backupRepository.findById(inProgress.getId()).get();
 
     } catch (Exception e) {
       // 5. [요구사항 Step 4-2] 실패 처리
@@ -57,10 +58,12 @@ public class BackupService {
       String errorSummary = summarizeException(e);
       // 최종 실패 상태 기록 (트랜잭션 분리)
       backupCommandService.markFailed(inProgress.getId(), logFile, errorSummary);
-
-      // 최종 상태 반영된 결과 반환
-      return backupRepository.findById(inProgress.getId()).get();
     }
+
+    // 최종 상태 반영된 결과 조회해서 반환
+    return backupRepository.findById(inProgress.getId())
+        .orElseThrow(
+            () -> new IllegalStateException("존재하지 않는 백업 이력입니다. ID: " + inProgress.getId()));
   }
 
   // 대시보드 마지막 백업 정보 조회용
