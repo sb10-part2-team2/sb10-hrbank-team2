@@ -18,5 +18,8 @@ public interface EmployeeRepositoryCustom {
 
   List<EmployeeDistributionDto> getEmployeeDistribution(String groupBy, EmployeeStatus status);
 
-  List<EmployeeTrendDto> getEmployeeTrend(LocalDate from, LocalDate to, EmployeeTrendInterval interval);
+  List<EmployeeTrendDto> getEmployeeTrend(LocalDate from, LocalDate to,
+      EmployeeTrendInterval interval);
+
+
 }

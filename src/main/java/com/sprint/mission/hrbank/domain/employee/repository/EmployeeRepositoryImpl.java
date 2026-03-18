@@ -1,6 +1,5 @@
 package com.sprint.mission.hrbank.domain.employee.repository;
 
-
 import static com.sprint.mission.hrbank.domain.department.QDepartment.department;
 import static com.sprint.mission.hrbank.domain.employee.QEmployee.employee;
 
@@ -120,7 +119,8 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryCustom {
   }
 
   @Override
-  public List<EmployeeDistributionDto> getEmployeeDistribution(String groupBy, EmployeeStatus status) {
+  public List<EmployeeDistributionDto> getEmployeeDistribution(String groupBy,
+      EmployeeStatus status) {
     // 1. 전체 직원 수 조회 (비율 계산용)
     Long total = queryFactory
         .select(employee.count())
@@ -151,7 +151,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryCustom {
           String key = tuple.get(path);
           Long countWrapper = tuple.get(employee.count());
           long count = (countWrapper != null) ? countWrapper : 0L;
-          
+
           double percentage = (totalCount > 0) ? (double) count / totalCount * 100 : 0.0;
           // 소수점 첫째 자리까지 반올림
           percentage = Math.round(percentage * 10.0) / 10.0;
@@ -161,7 +161,8 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryCustom {
   }
 
   @Override
-  public List<EmployeeTrendDto> getEmployeeTrend(LocalDate from, LocalDate to, EmployeeTrendInterval interval) {
+  public List<EmployeeTrendDto> getEmployeeTrend(LocalDate from, LocalDate to,
+      EmployeeTrendInterval interval) {
     List<EmployeeTrendDto> result = new ArrayList<>();
     LocalDate current = from;
     long previousCount = -1;
@@ -204,6 +205,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryCustom {
     return result;
   }
 
+
   private LocalDate getSnapshotDate(LocalDate date, EmployeeTrendInterval interval) {
     return switch (interval) {
       case DAILY -> date;
@@ -212,7 +214,8 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryCustom {
       case QUARTERLY -> {
         int month = date.getMonthValue();
         int lastMonthOfQuarter = ((month - 1) / 3 + 1) * 3;
-        yield date.withMonth(lastMonthOfQuarter).withDayOfMonth(date.withMonth(lastMonthOfQuarter).lengthOfMonth());
+        yield date.withMonth(lastMonthOfQuarter)
+            .withDayOfMonth(date.withMonth(lastMonthOfQuarter).lengthOfMonth());
       }
       case YEARLY -> date.withDayOfYear(date.lengthOfYear());
     };
