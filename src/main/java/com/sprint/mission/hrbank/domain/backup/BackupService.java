@@ -82,7 +82,7 @@ public class BackupService {
     );
 
     // nextIdAfter 계산 -> 현재 페이지 마지막 행의 id
-    Long nextIdAfter = (backupSlices.hasNext() && !content.isEmpty())
+    Long nextIdAfter = (backupSlices.hasNext())
         ? content.get(content.size() - 1).id()
         : null; // 다음 페이지 없는 경우 -> null
 
