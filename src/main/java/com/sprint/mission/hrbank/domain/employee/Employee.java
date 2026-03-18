@@ -96,7 +96,6 @@ public class Employee extends BaseUpdatableEntity {
       f.setId(this.profileImage.getId());
       snapshot.setProfileImage(f);
     }
-
     return snapshot;
   }
 
