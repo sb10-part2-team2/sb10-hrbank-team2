@@ -46,6 +46,7 @@ public class BackupController {
     return ResponseEntity.ok(backupMapper.toDto(backup));
   }
 
+  // 대시보드 마지막 백업 정보 조회용
   @GetMapping("/latest")
   @Operation(summary = "최근 백업 정보 조회", description = "지정된 상태의 가장 최근 백업 정보를 조회합니다. 상태를 지정하지 않으면 성공적으로 완료된(COMPLETED) 백업을 반환합니다.")
   public ResponseEntity<BackupDto> getLatestBackup(

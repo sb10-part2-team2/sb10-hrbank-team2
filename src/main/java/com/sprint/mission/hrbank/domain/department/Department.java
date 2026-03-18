@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Builder
-@AllArgsConstructor                                   // MapStruct 활용 생성자
+@AllArgsConstructor(access = AccessLevel.PRIVATE)   // MapStruct 활용 생성자
 @NoArgsConstructor(access = AccessLevel.PROTECTED)    // JPA 필수 생성자
 public class Department extends BaseUpdatableEntity {
 

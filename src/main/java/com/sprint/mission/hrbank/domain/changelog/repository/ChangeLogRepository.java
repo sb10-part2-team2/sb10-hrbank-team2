@@ -3,6 +3,7 @@ package com.sprint.mission.hrbank.domain.changelog.repository;
 import com.sprint.mission.hrbank.domain.changelog.ChangeLog;
 import com.sprint.mission.hrbank.domain.changelog.ChangeLogType;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -62,4 +63,10 @@ public interface ChangeLogRepository extends JpaRepository<ChangeLog, Long> {
       @Param("fromDate") Instant fromDate,
       @Param("toDate") Instant toDate
   );
+
+  @Query("""
+          SELECT c FROM ChangeLog c 
+          WHERE c.employeeId = :employeeId
+      """)
+  List<ChangeLog> findByEmployeeId(@Param("employeeId") long id);
 }
