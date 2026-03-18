@@ -9,9 +9,10 @@ import com.sprint.mission.hrbank.domain.changelog.dto.CursorPageResponseChangeLo
 import com.sprint.mission.hrbank.domain.changelog.mapper.ChangeLogMapper;
 import com.sprint.mission.hrbank.domain.changelog.repository.ChangeLogRepository;
 import com.sprint.mission.hrbank.domain.employee.Employee;
+import com.sprint.mission.hrbank.global.exception.CustomException;
+import com.sprint.mission.hrbank.global.exception.ErrorCode;
 import java.time.Instant;
 import java.util.List;
-import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,12 +36,12 @@ public class ChangeLogService {
       String memo) {
 // 1. 파라미터 검증 (400 Bad Request 성격)
     if (before == null && after == null) {
-      throw new IllegalArgumentException("이력을 생성하기 위한 직원 정보(before/after)가 모두 누락되었습니다.");
+      throw new CustomException(ErrorCode.CHANGE_LOG_BEFORE_AFTER_REQUIRED);
     }
 
     // 수정(UPDATED)일 때는 반드시 전/후 데이터가 모두 있어야 함
     if (type == ChangeLogType.UPDATED && (before == null || after == null)) {
-      throw new IllegalArgumentException("수정 이력을 생성하려면 수정 전/후 정보가 모두 필요합니다.");
+      throw new CustomException(ErrorCode.CHANGE_LOG_UPDATED_REQUIRES_BOTH);
     }
 
     Employee target = after != null ? after : before;
@@ -165,7 +166,7 @@ public class ChangeLogService {
   // 상세 목록 조회
   public ChangeLogDetailDto getChangeLogDetail(Long id) {
     ChangeLog detailLog = changeLogRepository.findDetailById(id)
-        .orElseThrow(() -> new NoSuchElementException("해당 id의 상세정보를 찾지 못했습니다."));
+        .orElseThrow(() -> new CustomException(ErrorCode.CHANGE_LOG_NOT_FOUND));
     return changeLogMapper.toDetailDto(detailLog);
   }
 
@@ -173,8 +174,9 @@ public class ChangeLogService {
   public Long getChangeLogCount(Instant fromDate, Instant toDate) {
     // 5. 날짜 범위 검증 (시작일이 종료일보다 늦을 경우)
     if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
-      throw new IllegalArgumentException("조회 시작일이 종료일보다 늦을 수 없습니다.");
+      throw new CustomException(ErrorCode.CHANGE_LOG_INVALID_DATE_RANGE);
     }
+
     return changeLogRepository.countChangeLogs(fromDate, toDate);
   }
 }

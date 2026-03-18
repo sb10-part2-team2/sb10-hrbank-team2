@@ -7,6 +7,10 @@ public enum ErrorCode {
   // 백업
 
   // 변경로그
+  CHANGE_LOG_NOT_FOUND(404, "해당하는 수정 이력이 없습니다"),
+  CHANGE_LOG_INVALID_DATE_RANGE(400, "시작 일시는 종료 일시보다 이전이어야 합니다"),
+  CHANGE_LOG_BEFORE_AFTER_REQUIRED(400, "이력을 생성하기 위한 직원 정보가 누락되었습니다"),
+  CHANGE_LOG_UPDATED_REQUIRES_BOTH(400, "수정 이력을 생성하려면 수정 전/후 정보가 모두 필요합니다"),
 
   // 대시보드
 
