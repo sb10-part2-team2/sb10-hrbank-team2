@@ -13,7 +13,7 @@ public enum ErrorCode {
   // 부서
 
   // 직원
-
+  EMAIL_ALREADY_EXISTS(400, "중복된 이메일입니다."),
   // 파일
 
   // 공용

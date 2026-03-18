@@ -17,11 +17,12 @@ import com.sprint.mission.hrbank.domain.employee.mapper.EmployeeMapper;
 import com.sprint.mission.hrbank.domain.employee.repository.EmployeeRepository;
 import com.sprint.mission.hrbank.domain.file.entity.StoredFile;
 import com.sprint.mission.hrbank.domain.file.service.FileService;
+import com.sprint.mission.hrbank.global.exception.CustomException;
+import com.sprint.mission.hrbank.global.exception.ErrorCode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,7 +100,9 @@ public class EmployeeService {
       String clientIp) {
     Objects.requireNonNull(req, "유효하지 않은 요청입니다!");
 
-    Optional<Department> department = departmentRepository.findById(req.departmentId());
+    Department department = departmentRepository.findById(req.departmentId())
+        .orElseThrow(() -> new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS, "중복된 이메일입니다.")
+        );
 
     if (department.isEmpty()) {
       throw new NoSuchElementException("해당 부서를 찾을 수 없음");
