@@ -45,6 +45,7 @@ public class Employee extends BaseUpdatableEntity {
   @Column(nullable = false)
   private LocalDate hireDate;
 
+  @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private EmployeeStatus status;
