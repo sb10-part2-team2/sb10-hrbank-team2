@@ -2,7 +2,6 @@ package com.sprint.mission.hrbank.domain.employee.mapper;
 
 import com.sprint.mission.hrbank.domain.employee.Employee;
 import com.sprint.mission.hrbank.domain.employee.EmployeeStatus;
-import com.sprint.mission.hrbank.domain.employee.dto.CursorPageResponseEmployeeDto;
 import com.sprint.mission.hrbank.domain.employee.dto.EmployeeDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -25,9 +24,9 @@ public interface EmployeeMapper {
   EmployeeDto entityToDto(Employee employee);
 
   // dto -> Employee
-  Employee dtoToEntity(EmployeeDto employeeDto);
-
-  // Employee -> CursorDto
-  CursorPageResponseEmployeeDto entityToCursorResponseDto(Employee employee);
+//  Employee dtoToEntity(EmployeeDto employeeDto);
+//
+//  // Employee -> CursorDto
+//  CursorPageResponseEmployeeDto entityToCursorResponseDto(Employee employee);
 }
 

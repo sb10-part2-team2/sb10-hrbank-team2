@@ -36,25 +36,28 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryCustom {
     // QuerydslConfig에서 Bean으로 설정해두었던 JPAQueryFactory를 통해 쿼리 생성 및 조합.
     List<Employee> rows = queryFactory
         .selectFrom(employee) // employee 에서 가져옴.
-        .leftJoin(employee.department, department)
+        .leftJoin(employee.department, department) // employee의 department도 left join
         .fetchJoin()// N + 1 을 해결하기 위해 department도 fetch join
         .where(
-            nameOrEmailContains(req.nameOrEmail()),
-            departmentNameEq(req.departmentName()),
-            positionEq(req.position()),
-            employeeNumberEq(req.employeeNumber()),
-            hireDateGoe(req.hireDateFrom()),
-            hireDateLoe(req.hireDateTo()),
-            statusEq(req.status()),
-            cursorCondition(req.cursor())
+            nameOrEmailContains(req.nameOrEmail()), // 이름과 이메일이 포함되면
+            departmentNameEq(req.departmentName()), // 입력한 부서 이름이 같다면
+            positionEq(req.position()), // 입력한 직합이 같다면
+            employeeNumberEq(req.employeeNumber()), // 입력한 사원 번호가 같다면
+            hireDateGoe(req.hireDateFrom()), // 입력한 날짜보다 입사 일자가 greater or equal 이면
+            hireDateLoe(req.hireDateTo()), // 입력한 날짜보다 입사 일자가 less or equal 이면
+            statusEq(req.status()), // 입력한 상태 (재직중, 퇴사, 휴직중)이 맞다면
+            cursorCondition(req.cursor()) // 커서 페이지네이션을 위한 조건에 맞는다면
         )
-        .orderBy(employee.hireDate.desc(), employee.id.desc())
-        .limit(size + 1L)
-        .fetch();
+        .orderBy(employee.hireDate.desc(),
+            employee.id.desc()) // 기본적으로 입사일 desc으로 정렬, 같을 경우 사원 id desc 정렬
+        .limit(size + 1L) // 페이지네이션을 위해 limit에 1을 여분으로 추가
+        .fetch(); // fetch
 
-    boolean hasNext = rows.size() > size;
-    List<Employee> page = hasNext ? rows.subList(0, size) : rows;
+    boolean hasNext = rows.size() > size; // 가져온 행들의 크기(개수)가 지정한 사이즈보다 크다? -> 다음 페이지가 존재하구나...
+    List<Employee> page =
+        hasNext ? rows.subList(0, size) : rows; // size 10만큼만 잘라서 페이지로 보여준다. 다음 페이지 없을 시 그대로
 
+    // 다음 커서를 null로 일단 초기화
     String nextCursor = null;
     Long nextIdAfter = null;
 

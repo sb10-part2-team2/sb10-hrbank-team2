@@ -19,7 +19,7 @@ spring:
       hibernate:
         format_sql: false # 로그에 출력되는 SQL 포맷팅
         use_sql_comments: false # 로그 주석 추가
-      open-in-view: false # OSIV 비활성화
+    open-in-view: false # OSIV 비활성화
 
 logging:
   level:
@@ -31,7 +31,7 @@ logging:
 hrbank:
   storage:
     local:
-      root-path: /app/storage
+      root-path: .hrbank/storage
       # @Value("${hrbank.storage.local.root-path}") 를 통해서 할당됨
   backup:
     # 1시간(3600000ms)마다 실행

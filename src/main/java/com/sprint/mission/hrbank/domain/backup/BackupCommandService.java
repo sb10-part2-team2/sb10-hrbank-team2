@@ -27,8 +27,9 @@ public class BackupCommandService {
   public Backup createInProgress(String worker) {
     try {
       // 백업 생성 시도
+      Instant before = Instant.now();
       return backupRepository.saveAndFlush(
-          new Backup(worker, Instant.now(), BackupStatus.IN_PROGRESS)
+          new Backup(worker, before, BackupStatus.IN_PROGRESS)
       );
     } catch (DataIntegrityViolationException e) {
       // 이미 진행 중인 백업이 있을 시 (유니크 제약 위반 발생 시) 예외 처리
@@ -39,7 +40,8 @@ public class BackupCommandService {
   // [변경 사항이 없을 시] '건너뜀' 상태 이력 생성
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public Backup createSkipped(String worker) {
-    return backupRepository.save(new Backup(worker, Instant.now(), BackupStatus.SKIPPED));
+    Instant before = Instant.now();
+    return backupRepository.save(new Backup(worker, before, BackupStatus.SKIPPED));
   }
 
   // [백업이 성공적으로 완료되었을 시] 파일 정보와 완료 상태 업데이트
