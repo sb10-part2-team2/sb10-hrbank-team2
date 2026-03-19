@@ -41,7 +41,6 @@ public class EmployeeService {
   private final FileService fileService;
 
   // 직원 전체 목록 조회 서비스 메서드
-  @Transactional
   public CursorPageResponseEmployeeDto getEmployees(EmployeeSearchRequest req) {
     Objects.requireNonNull(req, ("유효하지 않은 요청!"));
 
