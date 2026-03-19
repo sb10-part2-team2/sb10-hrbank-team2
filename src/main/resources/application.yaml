@@ -2,7 +2,7 @@ spring:
   application:
     name: hrbank
   profiles:
-    active: dev
+    active: prod
   datasource:
     driver-class-name: org.postgresql.Driver
     # .env에 민감 정보 저장
@@ -13,7 +13,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create # create - 시작 시 drop + create
-    defer-datasource-initialization: true # Hibernate가 테이블 생성 후 data.sql을 실행하도록 설정
+    #    defer-datasource-initialization: true # Hibernate가 테이블 생성 후 data.sql을 실행하도록 설정
 
     properties:
       hibernate:
