@@ -15,11 +15,16 @@ spring:
     hibernate:
       # create - 시작 시 drop + create
       ddl-auto: none # Hiberante 기본 DDL 기능 끄기
+    defer-datasource-initialization: false # Hibernate가 테이블 생성 후 data.sql을 실행하도록 설정
     properties:
       hibernate:
         format_sql: false # 로그에 출력되는 SQL 포맷팅
         use_sql_comments: false # 로그 주석 추가
     open-in-view: false # OSIV 비활성화
+
+  sql:
+    init:
+      mode: never # 시작 시 항상 SQL 스크립트 실행
 
 logging:
   level:
