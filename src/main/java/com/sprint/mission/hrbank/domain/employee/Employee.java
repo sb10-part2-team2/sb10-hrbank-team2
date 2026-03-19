@@ -104,30 +104,21 @@ public class Employee extends BaseUpdatableEntity {
 
   public void update(String name, String email, String position, LocalDate hireDate,
       EmployeeStatus status) {
-    boolean changed = false;
 
     if (name != null && !name.equals(this.name)) {
       this.setName(name);
-      changed = true;
     }
     if (email != null) {
       this.setEmail(email);
-      changed = true;
     }
     if (position != null) {
       this.setPosition(position);
-      changed = true;
     }
     if (hireDate != null) {
       this.setHireDate(hireDate);
-      changed = true;
     }
     if (status != null) {
       this.setStatus(status);
-      changed = true;
-    }
-    if (changed) {
-      this.setUpdatedAt(Instant.now());
     }
 
   }
