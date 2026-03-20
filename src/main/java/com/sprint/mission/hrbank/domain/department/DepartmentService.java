@@ -10,6 +10,7 @@ import com.sprint.mission.hrbank.global.exception.CustomException;
 import com.sprint.mission.hrbank.global.exception.ErrorCode;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -86,7 +87,7 @@ public class DepartmentService {
 
     // 실행되는 함수? 1차: 정렬방향, 2차: 정렬필드에 맞춰서 repository 실행
     // 결과값: (부서, 부서 인원수)
-    List<Object[]> queryResults = switch (Sort.Direction.fromString(request.sortDirection())) {
+    List<Object[]> queryResults = switch (Objects.requireNonNull(sort.getOrderFor(sortField)).getDirection()) {
       case ASC -> sortField.equals("establishedDate")
           ? departmentRepository.findByNameContainingOrDescriptionContainingOrderByEstablishedDateAsc(
           keyword, cursorDate, request.idAfter(), pageable)
